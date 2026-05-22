@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>OLEAND — Учёт белья</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--blue:#1B2A47;--blue2:#2563A8;--green:#166534;--greenb:#DCFCE7;--orange:#92400E;--orangeb:#FEF3C7;--red:#991B1B;--redb:#FEE2E2;--gray:#F2F2F7;--border:#E5E5EA;--text:#1C1C1E;--sub:#6B7280}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;background:var(--gray);min-height:100vh;padding-bottom:80px}
+.header{background:#621727;padding:20px 16px 16px;color:#fff}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.logo{font-size:22px;font-weight:700;letter-spacing:-.5px}
+.update-time{font-size:11px;opacity:.6}
+.header-sub{font-size:12px;opacity:.7}
+.tabs{display:flex;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.tab{flex:1;padding:13px 8px;font-size:13px;font-weight:600;text-align:center;color:var(--sub);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent}
+.tab.active{color:#621727;border-bottom-color:#621727}
+.page{display:none;padding:14px}
+.page.active{display:block}
+.alert-bar{background:#FFF3CD;border-left:3px solid #F59E0B;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:13px;color:#92400E;font-weight:500}
+.card{background:#fff;border-radius:16px;margin-bottom:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.card-header{padding:13px 16px;display:flex;align-items:center;justify-content:space-between}
+.card-name{font-size:15px;font-weight:700;color:#fff}
+.card-badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.2);color:#fff}
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;padding:12px 16px;border-bottom:1px solid var(--gray)}
+.stat{text-align:center}
+.stat-n{font-size:22px;font-weight:700;color:var(--text)}
+.stat-n.orange{color:#C2410C}
+.stat-n.green{color:var(--green)}
+.stat-l{font-size:10px;color:var(--sub);margin-top:1px}
+.items{padding:6px 0}
+.item{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;border-bottom:.5px solid var(--gray)}
+.item:last-child{border-bottom:none}
+.item-name{font-size:13px;color:var(--text);flex:1;margin-right:8px}
+.item-nums{font-size:12px;color:var(--sub);margin-right:8px;white-space:nowrap}
+.badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.ok{background:var(--greenb);color:var(--green)}
+.warn{background:var(--orangeb);color:var(--orange)}
+.bad{background:var(--redb);color:var(--red)}
+.grey{background:var(--gray);color:var(--sub)}
+.expand-btn{width:100%;padding:10px;text-align:center;font-size:12px;color:var(--blue2);font-weight:600;border:none;background:none;cursor:pointer;border-top:.5px solid var(--gray)}
+.details{display:none}
+.details.open{display:block}
+.cons-card{background:#fff;border-radius:16px;margin-bottom:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.cons-header{padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.cons-name{font-size:14px;font-weight:700;color:#fff}
+.cons-date{font-size:11px;color:rgba(255,255,255,.8)}
+.cons-items{padding:4px 0}
+.cons-item{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;border-bottom:.5px solid var(--gray)}
+.cons-item:last-child{border-bottom:none}
+.cons-name2{font-size:13px;color:var(--text)}
+.no-data{text-align:center;padding:20px;color:var(--sub);font-size:13px}
+.laundry-card{background:#fff;border-radius:16px;margin-bottom:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.laundry-header{background:#92400E;padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.laundry-title{font-size:14px;font-weight:700;color:#fff}
+.laundry-status{font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.2);color:#fff}
+.laundry-info{padding:12px 16px;border-bottom:.5px solid var(--gray);display:flex;gap:16px;flex-wrap:wrap}
+.laundry-meta{font-size:12px;color:var(--sub)}
+.laundry-meta span{font-weight:600;color:var(--text)}
+.laundry-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0}
+.laundry-item{padding:8px 16px;border-bottom:.5px solid var(--gray);display:flex;align-items:center;justify-content:space-between}
+.laundry-item:nth-child(odd){border-right:.5px solid var(--gray)}
+.laundry-item-name{font-size:12px;color:var(--text)}
+.laundry-item-num{font-size:14px;font-weight:700;color:#C2410C}
+.total-card{background:var(--blue);border-radius:16px;padding:14px 16px;margin-bottom:12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.total-stat{text-align:center}
+.total-n{font-size:24px;font-weight:700;color:#fff}
+.total-l{font-size:10px;color:rgba(255,255,255,.6);margin-top:2px}
+.need-buy{background:#FFF3CD;margin:0 16px 10px;padding:10px 12px;border-radius:10px;font-size:12px;color:#92400E}
+.need-buy strong{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.refresh-btn{position:fixed;bottom:20px;right:16px;background:var(--blue2);color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 12px rgba(37,99,168,.4);z-index:200}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="logo">🏠 OLEAND</div>
+    <div class="update-time" id="upd">загрузка...</div>
+  </div>
+  <div class="header-sub">Учёт белья и расходников · 6 объектов</div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab(0)">📊 Бельё</button>
+  <button class="tab" onclick="showTab(1)">🛁 Расходники</button>
+  <button class="tab" onclick="showTab(2)">🧺 Прачка</button>
+</div>
+
+<!-- TAB 1: БЕЛЬЁ -->
+<div class="page active" id="tab0">
+  <div class="total-card">
+    <div class="total-stat"><div class="total-n">456</div><div class="total-l">Куплено</div></div>
+    <div class="total-stat"><div class="total-n" style="color:#FEF3C7">72</div><div class="total-l">В прачке</div></div>
+    <div class="total-stat"><div class="total-n" style="color:#DCFCE7">384</div><div class="total-l">На объектах</div></div>
+  </div>
+
+  <div class="alert-bar">⚠️ Петроградка б+м: 3 позиции без остатка — нужно закупить!</div>
+
+  <div class="card">
+    <div class="card-header" style="background:#2563A8">
+      <div class="card-name">Петроградка б+м</div>
+      <div class="card-badge">🔴 3 срочных</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-n">98</div><div class="stat-l">Куплено</div></div>
+      <div class="stat"><div class="stat-n orange">46</div><div class="stat-l">В прачке</div></div>
+      <div class="stat"><div class="stat-n green">52</div><div class="stat-l">На объекте</div></div>
+    </div>
+    <div class="items">
+      <div class="item"><span class="item-name">Пododеяльник 2,0</span><span class="item-nums">6 → 3</span><span class="badge ok">В норме</span></div>
+      <div class="item"><span class="item-name">Наволочки 50x70</span><span class="item-nums">12 → 6</span><span class="badge warn">На минимуме</span></div>
+      <div class="item"><span class="item-name">Пododеяльник 1,5</span><span class="item-nums">6 → 0</span><span class="badge bad">НЕТ!</span></div>
+    </div>
+    <button class="expand-btn" onclick="toggleDetails(this)">▼ Все 11 позиций</button>
+    <div class="details">
+      <div class="item"><span class="item-name">Простыня 2,0</span><span class="item-nums">6 → 3</span><span class="badge ok">В норме</span></div>
+      <div class="item"><span class="item-name">Простыня 1,5</span><span class="item-nums">6 → 0</span><span class="badge bad">НЕТ!</span></div>
+      <div class="item"><span class="item-name">Наволочки 1,5</span><span class="item-nums">6 → 0</span><span class="badge bad">НЕТ!</span></div>
+      <div class="item"><span class="item-name">Полотенце большое</span><span class="item-nums">18 → 12</span><span class="badge ok">В норме</span></div>
+      <div class="item"><span class="item-name">Полотенце среднее</span><span class="item-nums">18 → 15</span><span class="badge ok">В норме</span></div>
+      <div class="item"><span class="item-name">Полотенце для ног</span><span class="item-nums">8 → 5</span><span class="badge ok">В норме</span></div>
+      <div class="item"><span class="item-name">Салфетка кухонная</span><span class="item-nums">6 → 3</span><span class="badge ok">В норме</span></div>
+      <div class="item"><span class="item-name">Салфетка доп.</span><span class="item-nums">6 → 5</span><span class="badge ok">В норме</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" style="background:#0F766E">
+      <div class="card-name">Саперный б+м</div>
+      <div class="card-badge">✅ В норме</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-n">92</div><div class="stat-l">Куплено</div></div>
+      <div class="stat"><div class="stat-n orange">0</div><div class="stat-l">В прачке</div></div>
+      <div class="stat"><div class="stat-n green">92</div><div class="stat-l">На объекте</div></div>
+    </div>
+    <div class="items">
+      <div class="item"><span class="item-name">Наволочки клетка</span><span class="item-nums">4 → 4</span><span class="badge warn">На минимуме</span></div>
+      <div class="item"><span class="item-name">Остальные 7 позиций</span><span class="item-nums"></span><span class="badge ok">В норме</span></div>
+    </div>
+    <button class="expand-btn" onclick="toggleDetails(this)">▼ Все позиции</button>
+    <div class="details">
+      <div class="item"><span class="item-name">Пododеяльник 2,0</span><span class="item-nums">9 → 9</span><span class="badge ok">В норме</span></div>
+      <div class="item"><span class="item-name">Простыня 2,0</span><span class="item-nums">9 → 9</span><span class="badge ok">В норме</span></div>
+      <div class="item"><span class="item-name">Наволочки 70x70</span><span class="item-nums">18 → 18</span><span class="badge ok">В норме</span></div>
+      <div class="item"><span class="item-name">Полотенце большое</span><span class="item-nums">18 → 18</span><span class="badge ok">В норме</span></div>
+      <div class="item"><span class="item-name">Полотенце среднее</span><span class="item-nums">18 → 18</span><span class="badge ok">В норме</span></div>
+      <div class="item"><span class="item-name">Полотенце для ног</span><span class="item-nums">8 → 8</span><span class="badge ok">В норме</span></div>
+      <div class="item"><span class="item-name">Салфетка кухонная</span><span class="item-nums">8 → 8</span><span class="badge ok">В норме</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" style="background:#7C3AED">
+      <div class="card-name">Царская столица</div>
+      <div class="card-badge">✅ В норме</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-n">90</div><div class="stat-l">Куплено</div></div>
+      <div class="stat"><div class="stat-n orange">0</div><div class="stat-l">В прачке</div></div>
+      <div class="stat"><div class="stat-n green">90</div><div class="stat-l">На объекте</div></div>
+    </div>
+    <div class="items">
+      <div class="item"><span class="item-name">Все 10 позиций в норме</span><span class="item-nums">90 шт</span><span class="badge ok">✅ Отлично</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" style="background:#1D4ED8">
+      <div class="card-name">BLUE Железнодорожный</div>
+      <div class="card-badge">🟡 2 на минимуме</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-n">48</div><div class="stat-l">Куплено</div></div>
+      <div class="stat"><div class="stat-n orange">8</div><div class="stat-l">В прачке</div></div>
+      <div class="stat"><div class="stat-n green">40</div><div class="stat-l">На объекте</div></div>
+    </div>
+    <div class="items">
+      <div class="item"><span class="item-name">Полотенце для ног</span><span class="item-nums">3 → 2</span><span class="badge warn">На минимуме</span></div>
+      <div class="item"><span class="item-name">Салфетка кухонная</span><span class="item-nums">3 → 2</span><span class="badge warn">На минимуме</span></div>
+      <div class="item"><span class="item-name">Остальные позиции</span><span class="item-nums"></span><span class="badge ok">В норме</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" style="background:#15803D">
+      <div class="card-name">GREEN Тосина</div>
+      <div class="card-badge">✅ В норме</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-n">45</div><div class="stat-l">Куплено</div></div>
+      <div class="stat"><div class="stat-n orange">0</div><div class="stat-l">В прачке</div></div>
+      <div class="stat"><div class="stat-n green">45</div><div class="stat-l">На объекте</div></div>
+    </div>
+    <div class="items">
+      <div class="item"><span class="item-name">Все 10 позиций в норме</span><span class="item-nums">45 шт</span><span class="badge ok">✅ Отлично</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" style="background:#B45309">
+      <div class="card-name">NUDE Манчестерская</div>
+      <div class="card-badge">✅ В норме</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-n">83</div><div class="stat-l">Куплено</div></div>
+      <div class="stat"><div class="stat-n orange">18</div><div class="stat-l">В прачке</div></div>
+      <div class="stat"><div class="stat-n green">65</div><div class="stat-l">На объекте</div></div>
+    </div>
+    <div class="items">
+      <div class="item"><span class="item-name">Пododеяльник 2,0</span><span class="item-nums">9 → 7</span><span class="badge ok">В норме</span></div>
+      <div class="item"><span class="item-name">Полотенце большое</span><span class="item-nums">16 → 12</span><span class="badge ok">В норме</span></div>
+      <div class="item"><span class="item-name">Полотенце среднее</span><span class="item-nums">19 → 15</span><span class="badge ok">В норме</span></div>
+    </div>
+    <button class="expand-btn" onclick="toggleDetails(this)">▼ Все позиции</button>
+    <div class="details">
+      <div class="item"><span class="item-name">Простыня 2,0</span><span class="item-nums">9 → 7</span><span class="badge ok">В норме</span></div>
+      <div class="item"><span class="item-name">Наволочки</span><span class="item-nums">18 → 15</span><span class="badge ok">В норме</span></div>
+      <div class="item"><span class="item-name">Полотенце для ног</span><span class="item-nums">7 → 5</span><span class="badge ok">В норме</span></div>
+      <div class="item"><span class="item-name">Салфетка кухонная</span><span class="item-nums">5 → 4</span><span class="badge ok">В норме</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 2: РАСХОДНИКИ -->
+<div class="page" id="tab1">
+  <div class="cons-card">
+    <div class="cons-header" style="background:#1D4ED8">
+      <div class="cons-name">BLUE Железнодорожный</div>
+      <div class="cons-date">📅 19.05.2026 · Гуля</div>
+    </div>
+    <div class="cons-items">
+      <div class="cons-item"><span class="cons-name2">Шампунь</span><span class="badge ok">Есть</span></div>
+      <div class="cons-item"><span class="cons-name2">Гель для душа</span><span class="badge ok">Есть</span></div>
+      <div class="cons-item"><span class="cons-name2">Кондиционер</span><span class="badge ok">Есть</span></div>
+      <div class="cons-item"><span class="cons-name2">Мыло жидкое</span><span class="badge ok">Есть</span></div>
+      <div class="cons-item"><span class="cons-name2">Зубной набор</span><span class="badge ok">Есть</span></div>
+      <div class="cons-item"><span class="cons-name2">Тапочки</span><span class="badge ok">Есть</span></div>
+      <div class="cons-item"><span class="cons-name2">Ватные диски и палочки</span><span class="badge ok">Есть</span></div>
+      <div class="cons-item"><span class="cons-name2">Туалетная бумага</span><span class="badge warn">Пополнить!</span></div>
+      <div class="cons-item"><span class="cons-name2">Пакеты для мусора</span><span class="badge ok">Есть</span></div>
+      <div class="cons-item"><span class="cons-name2">Салфетки</span><span class="badge ok">Есть</span></div>
+      <div class="cons-item"><span class="cons-name2">Чай, кофе</span><span class="badge ok">Есть</span></div>
+      <div class="cons-item"><span class="cons-name2">Соль, Сахар, Перец</span><span class="badge ok">Есть</span></div>
+      <div class="cons-item"><span class="cons-name2">Губки для посуды</span><span class="badge ok">Есть</span></div>
+      <div class="cons-item"><span class="cons-name2">Средство для посуды</span><span class="badge ok">Есть</span></div>
+      <div class="cons-item"><span class="cons-name2">Средство для унитаза</span><span class="badge bad">НЕТ!</span></div>
+      <div class="cons-item"><span class="cons-name2">Средство для ванной</span><span class="badge bad">НЕТ!</span></div>
+      <div class="cons-item"><span class="cons-name2">Средство для стёкол</span><span class="badge ok">Есть</span></div>
+      <div class="cons-item"><span class="cons-name2">Универсальный очиститель</span><span class="badge bad">НЕТ!</span></div>
+      <div class="cons-item"><span class="cons-name2">Отбеливатель</span><span class="badge bad">НЕТ!</span></div>
+    </div>
+    <div class="need-buy">
+      <strong>🛒 Нужно докупить:</strong>Туалетная бумага · Средство для унитаза · Средство для ванной · Универсальный очиститель · Отбеливатель
+    </div>
+  </div>
+
+  <div class="cons-card"><div class="cons-header" style="background:#2563A8"><div class="cons-name">Петроградка б+м</div><div class="cons-date">📭 Нет отчёта</div></div><div class="no-data">Форма ещё не заполнялась</div></div>
+  <div class="cons-card"><div class="cons-header" style="background:#0F766E"><div class="cons-name">Саперный б+м</div><div class="cons-date">📭 Нет отчёта</div></div><div class="no-data">Форма ещё не заполнялась</div></div>
+  <div class="cons-card"><div class="cons-header" style="background:#7C3AED"><div class="cons-name">Царская столица</div><div class="cons-date">📭 Нет отчёта</div></div><div class="no-data">Форма ещё не заполнялась</div></div>
+  <div class="cons-card"><div class="cons-header" style="background:#15803D"><div class="cons-name">GREEN Тосина</div><div class="cons-date">📭 Нет отчёта</div></div><div class="no-data">Форма ещё не заполнялась</div></div>
+  <div class="cons-card"><div class="cons-header" style="background:#B45309"><div class="cons-name">NUDE Манчестерская</div><div class="cons-date">📭 Нет отчёта</div></div><div class="no-data">Форма ещё не заполнялась</div></div>
+</div>
+
+<!-- TAB 3: ПРАЧКА -->
+<div class="page" id="tab2">
+  <div class="card" style="margin-bottom:12px">
+    <div style="padding:14px 16px;background:var(--blue);border-radius:16px 16px 0 0">
+      <div style="font-size:13px;font-weight:700;color:#fff">📊 Сводка по прачке</div>
+    </div>
+    <div class="item"><span class="item-name" style="font-weight:600">Петроградка б+м</span><span style="font-size:13px;color:#C2410C;font-weight:700">46 шт в прачке</span></div>
+    <div class="item"><span class="item-name" style="font-weight:600">NUDE Манчестерская</span><span style="font-size:13px;color:#C2410C;font-weight:700">18 шт в прачке</span></div>
+    <div class="item"><span class="item-name" style="font-weight:600">BLUE Железнодор.</span><span style="font-size:13px;color:#C2410C;font-weight:700">8 шт в прачке</span></div>
+    <div class="item"><span class="item-name" style="font-weight:600">Саперный б+м</span><span style="font-size:13px;color:var(--green);font-weight:700">0 шт ✅</span></div>
+    <div class="item"><span class="item-name" style="font-weight:600">Царская столица</span><span style="font-size:13px;color:var(--green);font-weight:700">0 шт ✅</span></div>
+    <div class="item"><span class="item-name" style="font-weight:600">GREEN Тосина</span><span style="font-size:13px;color:var(--green);font-weight:700">0 шт ✅</span></div>
+  </div>
+
+  <div class="laundry-card">
+    <div class="laundry-header">
+      <div class="laundry-title">BLUE Железнодорожный</div>
+      <div class="laundry-status">⏳ Готово к сдаче</div>
+    </div>
+    <div class="laundry-info">
+      <div class="laundry-meta">📅 <span>19.05.2026</span></div>
+      <div class="laundry-meta">👤 <span>Гуля</span></div>
+      <div class="laundry-meta">Итого: <span>9 шт</span></div>
+    </div>
+    <div class="laundry-grid">
+      <div class="laundry-item"><span class="laundry-item-name">Пododеяльник 2,0</span><span class="laundry-item-num">1</span></div>
+      <div class="laundry-item"><span class="laundry-item-name">Простыня 2,0</span><span class="laundry-item-num">1</span></div>
+      <div class="laundry-item"><span class="laundry-item-name">Наволочка 2,0</span><span class="laundry-item-num">2</span></div>
+      <div class="laundry-item"><span class="laundry-item-name">Полотенце большое</span><span class="laundry-item-num">2</span></div>
+      <div class="laundry-item"><span class="laundry-item-name">Полотенце среднее</span><span class="laundry-item-num">2</span></div>
+      <div class="laundry-item"><span class="laundry-item-name">Полотенце для ног</span><span class="laundry-item-num">1</span></div>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:16px;color:var(--sub);font-size:13px;background:#fff;border-radius:16px;margin-bottom:12px">
+    🏠 Остальные объекты — поездок в прачку нет
+  </div>
+</div>
+
+<button class="refresh-btn" onclick="refresh()" title="Обновить">⟳</button>
+
+<script>
+const tabs=document.querySelectorAll('.tab');
+const pages=document.querySelectorAll('.page');
+function showTab(i){tabs.forEach((t,j)=>t.classList.toggle('active',i===j));pages.forEach((p,j)=>p.classList.toggle('active',i===j));}
+function toggleDetails(btn){const d=btn.nextElementSibling;d.classList.toggle('open');btn.textContent=d.classList.contains('open')?'▲ Скрыть':'▼ Все позиции';}
+function refresh(){const btn=document.querySelector('.refresh-btn');btn.style.transform='rotate(360deg)';btn.style.transition='transform 0.6s';setTimeout(()=>{btn.style.transform='';btn.style.transition='';},700);const n=new Date();document.getElementById('upd').textContent=n.toLocaleDateString('ru',{day:'2-digit',month:'2-digit'})+' '+n.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});}
+const n=new Date();document.getElementById('upd').textContent=n.toLocaleDateString('ru',{day:'2-digit',month:'2-digit'})+' '+n.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+</script>
+</body>
+</html>
