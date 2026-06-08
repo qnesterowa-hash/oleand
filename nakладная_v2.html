@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Накладная в прачку — OLEAND</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#F2F2F7;min-height:100vh;padding-bottom:40px}
+.header{background:#621727;padding:20px 16px 18px;text-align:center;color:#fff}
+.header h1{font-size:20px;font-weight:700}
+.header p{font-size:13px;opacity:.8;margin-top:4px}
+.content{padding:14px}
+.card{background:#fff;border-radius:16px;margin-bottom:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.card-title{background:#621727;color:#fff;padding:12px 16px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;display:flex;align-items:center;justify-content:space-between}
+.field{padding:12px 16px;border-bottom:.5px solid #F2F2F7;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.field:last-child{border-bottom:none}
+.field-label{font-size:14px;color:#1C1C1E;flex:1}
+.field-label small{display:block;font-size:11px;color:#8E8E93;margin-top:1px}
+.field select,.field input[type=date]{border:1.5px solid #E5E5EA;border-radius:10px;padding:8px 10px;font-size:14px;color:#1C1C1E;background:#fff;outline:none}
+.field select:focus,.field input:focus{border-color:#621727}
+.qty-wrap{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.qty-btn{width:36px;height:36px;border-radius:50%;border:1.5px solid #E5E5EA;background:#fff;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#621727;font-weight:500;line-height:1}
+.qty-btn:active{background:#F2F2F7}
+.qty-num{font-size:18px;font-weight:700;color:#1C1C1E;min-width:32px;text-align:center}
+.prep-row{padding:12px 16px;border-bottom:.5px solid #F2F2F7;position:relative}
+.prep-row:last-child{border-bottom:none}
+.prep-row-num{font-size:11px;font-weight:700;color:#621727;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+.prep-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.prep-label{font-size:11px;color:#8E8E93;margin-bottom:3px}
+.prep-fields select,.prep-fields input{width:100%;border:1.5px solid #E5E5EA;border-radius:10px;padding:9px 10px;font-size:14px;color:#1C1C1E;background:#fff;outline:none}
+.prep-fields select:focus,.prep-fields input:focus{border-color:#621727}
+.add-btn{width:100%;padding:12px;background:#F2F2F7;color:#621727;border:1.5px dashed #621727;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;margin-top:2px}
+.remove-btn{position:absolute;top:12px;right:14px;width:24px;height:24px;border-radius:50%;background:#FEE2E2;border:none;color:#991B1B;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.section-note{padding:8px 16px 2px;font-size:12px;color:#8E8E93;font-style:italic}
+textarea{width:100%;padding:12px 14px;border:1.5px solid #E5E5EA;border-radius:10px;font-size:15px;color:#1C1C1E;background:#fff;outline:none;resize:none;min-height:80px;font-family:inherit}
+textarea:focus{border-color:#621727}
+.btn-main{width:100%;padding:17px;background:#621727;color:#fff;border:none;border-radius:14px;font-size:17px;font-weight:700;cursor:pointer;margin-top:4px}
+.btn-main:active{opacity:.85}
+.result{display:none;background:#fff;border-radius:16px;padding:16px;margin-top:12px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.result-title{font-size:14px;font-weight:700;color:#1C1C1E;margin-bottom:10px}
+.invoice-box{background:#F8F8F8;border:1px solid #E5E5EA;border-radius:12px;padding:14px;margin-bottom:12px;white-space:pre-wrap;font-size:13px;font-family:'Courier New',monospace;color:#1C1C1E;line-height:1.7;max-height:420px;overflow-y:auto}
+.btn-copy{width:100%;padding:14px;background:#166534;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer}
+.btn-copy.done{background:#0F766E}
+.btn-new{width:100%;padding:12px;background:#fff;color:#621727;border:2px solid #621727;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🧺 Накладная в прачку</h1>
+  <p>OLEAND · Заполни и отправь в чат прачки</p>
+</div>
+
+<div class="content">
+
+  <!-- ОБЪЕКТ -->
+  <div class="card">
+    <div class="card-title">🏠 Объект</div>
+    <div class="field">
+      <div class="field-label">Выбери объект</div>
+      <select id="obj">
+        <option value="">— выбрать —</option>
+        <option>Петроградка б+м</option>
+        <option>Саперный б+м</option>
+        <option>Царская столица</option>
+        <option>BLUE Железнодор.</option>
+        <option>GREEN Тосина</option>
+        <option>NUDE Манчестерская</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- КТО ПОДГОТОВИЛ -->
+  <div class="card">
+    <div class="card-title">
+      👤 Кто подготовил бельё
+    </div>
+    <div id="prep-list">
+      <!-- Row 1 always shown -->
+      <div class="prep-row" id="prep-0">
+        <div class="prep-row-num">Уборка 1</div>
+        <div class="prep-fields">
+          <div>
+            <div class="prep-label">Дата уборки</div>
+            <input type="date" id="d0">
+          </div>
+          <div>
+            <div class="prep-label">Горничная</div>
+            <select id="s0">
+              <option value="">— выбрать —</option>
+              <option>Валерия</option>
+              <option>Мария</option>
+              <option>Анна</option>
+              <option>Гуля</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:10px 16px" id="add-wrap">
+      <button class="add-btn" onclick="addPrep()" id="addBtn">+ Добавить ещё уборку</button>
+    </div>
+  </div>
+
+  <!-- ПОСТЕЛЬНОЕ БЕЛЬЁ -->
+  <div class="card">
+    <div class="card-title">🛏 Постельное бельё</div>
+    <div class="section-note">Общее количество за все уборки</div>
+    <div class="field">
+      <div class="field-label">Пododеяльник 2,0<small>двуспальный</small></div>
+      <div class="qty-wrap">
+        <button class="qty-btn" onclick="ch('q1',-1)">−</button>
+        <span class="qty-num" id="q1">0</span>
+        <button class="qty-btn" onclick="ch('q1',1)">+</button>
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">Простыня 2,0<small>двуспальная</small></div>
+      <div class="qty-wrap">
+        <button class="qty-btn" onclick="ch('q2',-1)">−</button>
+        <span class="qty-num" id="q2">0</span>
+        <button class="qty-btn" onclick="ch('q2',1)">+</button>
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">Наволочка 2,0<small>70x70</small></div>
+      <div class="qty-wrap">
+        <button class="qty-btn" onclick="ch('q3',-1)">−</button>
+        <span class="qty-num" id="q3">0</span>
+        <button class="qty-btn" onclick="ch('q3',1)">+</button>
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">Пododеяльник 1,5<small>полуторный</small></div>
+      <div class="qty-wrap">
+        <button class="qty-btn" onclick="ch('q4',-1)">−</button>
+        <span class="qty-num" id="q4">0</span>
+        <button class="qty-btn" onclick="ch('q4',1)">+</button>
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">Простыня 1,5<small>полуторная</small></div>
+      <div class="qty-wrap">
+        <button class="qty-btn" onclick="ch('q5',-1)">−</button>
+        <span class="qty-num" id="q5">0</span>
+        <button class="qty-btn" onclick="ch('q5',1)">+</button>
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">Наволочка 1,5<small>50x70</small></div>
+      <div class="qty-wrap">
+        <button class="qty-btn" onclick="ch('q6',-1)">−</button>
+        <span class="qty-num" id="q6">0</span>
+        <button class="qty-btn" onclick="ch('q6',1)">+</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ПОЛОТЕНЦА -->
+  <div class="card">
+    <div class="card-title">🪴 Полотенца</div>
+    <div class="field">
+      <div class="field-label">Полотенце большое<small>банное</small></div>
+      <div class="qty-wrap">
+        <button class="qty-btn" onclick="ch('q7',-1)">−</button>
+        <span class="qty-num" id="q7">0</span>
+        <button class="qty-btn" onclick="ch('q7',1)">+</button>
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">Полотенце среднее<small>для лица</small></div>
+      <div class="qty-wrap">
+        <button class="qty-btn" onclick="ch('q8',-1)">−</button>
+        <span class="qty-num" id="q8">0</span>
+        <button class="qty-btn" onclick="ch('q8',1)">+</button>
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">Полотенце для ног<small>коврик</small></div>
+      <div class="qty-wrap">
+        <button class="qty-btn" onclick="ch('q9',-1)">−</button>
+        <span class="qty-num" id="q9">0</span>
+        <button class="qty-btn" onclick="ch('q9',1)">+</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ПРОЧЕЕ -->
+  <div class="card">
+    <div class="card-title">🧻 Прочее</div>
+    <div class="field">
+      <div class="field-label">Салфетка кухонная</div>
+      <div class="qty-wrap">
+        <button class="qty-btn" onclick="ch('q10',-1)">−</button>
+        <span class="qty-num" id="q10">0</span>
+        <button class="qty-btn" onclick="ch('q10',1)">+</button>
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">Салфетка (клетка)</div>
+      <div class="qty-wrap">
+        <button class="qty-btn" onclick="ch('q11',-1)">−</button>
+        <span class="qty-num" id="q11">0</span>
+        <button class="qty-btn" onclick="ch('q11',1)">+</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ЗАМЕЧАНИЯ -->
+  <div class="card">
+    <div class="card-title">💬 Замечания</div>
+    <div style="padding:12px 16px">
+      <textarea id="note" placeholder="Пятна, повреждения, особые пожелания..."></textarea>
+    </div>
+  </div>
+
+  <button class="btn-main" onclick="generate()">📄 Сформировать накладную</button>
+
+  <!-- РЕЗУЛЬТАТ -->
+  <div class="result" id="result">
+    <div class="result-title">✅ Готово — скопируй и отправь в чат прачки</div>
+    <div class="invoice-box" id="invoice"></div>
+    <button class="btn-copy" id="copyBtn" onclick="copyInvoice()">📋 Скопировать накладную</button>
+    <button class="btn-new" onclick="newForm()">✏️ Заполнить новую</button>
+  </div>
+
+</div>
+
+<script>
+// Set today
+document.getElementById('d0').value = new Date().toISOString().split('T')[0];
+
+let prepCount = 1;
+const MAX_PREP = 3;
+
+function addPrep() {
+  if (prepCount >= MAX_PREP) return;
+  const idx = prepCount;
+  const div = document.createElement('div');
+  div.className = 'prep-row';
+  div.id = 'prep-' + idx;
+  const today = new Date().toISOString().split('T')[0];
+  div.innerHTML = `
+    <div class="prep-row-num">Уборка ${idx+1}</div>
+    <button class="remove-btn" onclick="removePrep(${idx})">×</button>
+    <div class="prep-fields">
+      <div>
+        <div class="prep-label">Дата уборки</div>
+        <input type="date" id="d${idx}" value="${today}">
+      </div>
+      <div>
+        <div class="prep-label">Горничная</div>
+        <select id="s${idx}">
+          <option value="">— выбрать —</option>
+          <option>Валерия</option>
+          <option>Мария</option>
+          <option>Анна</option>
+          <option>Гуля</option>
+        </select>
+      </div>
+    </div>`;
+  document.getElementById('prep-list').appendChild(div);
+  prepCount++;
+  if (prepCount >= MAX_PREP) {
+    document.getElementById('addBtn').style.display = 'none';
+  }
+}
+
+function removePrep(idx) {
+  const el = document.getElementById('prep-' + idx);
+  if (el) el.remove();
+  prepCount--;
+  document.getElementById('addBtn').style.display = 'block';
+  // Renumber
+  const rows = document.querySelectorAll('.prep-row');
+  rows.forEach((r, i) => { const n = r.querySelector('.prep-row-num'); if(n) n.textContent = `Уборка ${i+1}`; });
+}
+
+function ch(id, delta) {
+  const el = document.getElementById(id);
+  el.textContent = Math.max(0, parseInt(el.textContent) + delta);
+}
+
+const items = [
+  {id:'q1', name:'Пododеяльник 2,0',  group:'bed'},
+  {id:'q2', name:'Простыня 2,0',       group:'bed'},
+  {id:'q3', name:'Наволочка 2,0',      group:'bed'},
+  {id:'q4', name:'Пododеяльник 1,5',  group:'bed'},
+  {id:'q5', name:'Простыня 1,5',       group:'bed'},
+  {id:'q6', name:'Наволочка 1,5',      group:'bed'},
+  {id:'q7', name:'Полотенце большое',  group:'towel'},
+  {id:'q8', name:'Полотенце среднее',  group:'towel'},
+  {id:'q9', name:'Полотенце для ног',  group:'towel'},
+  {id:'q10',name:'Салфетка кухонная', group:'other'},
+  {id:'q11',name:'Салфетка (клетка)', group:'other'},
+];
+
+function generate() {
+  const obj  = document.getElementById('obj').value;
+  const note = document.getElementById('note').value.trim();
+
+  if (!obj) { alert('Выбери объект!'); return; }
+
+  // Collect preparers
+  const preps = [];
+  document.querySelectorAll('.prep-row').forEach((row, i) => {
+    const di = row.querySelector('input[type=date]');
+    const si = row.querySelector('select');
+    if (di && si && di.value && si.value) {
+      preps.push({
+        date: di.value.split('-').reverse().join('.'),
+        staff: si.value
+      });
+    }
+  });
+  if (preps.length === 0) { alert('Укажи хотя бы одну дату и горничную!'); return; }
+
+  const filled = items.filter(it => parseInt(document.getElementById(it.id).textContent) > 0);
+  if (filled.length === 0) { alert('Добавь хотя бы одну позицию белья!'); return; }
+
+  const total = filled.reduce((s,it) => s + parseInt(document.getElementById(it.id).textContent), 0);
+  const sendDate = new Date().toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+  let t = '';
+  t += '📋 НАКЛАДНАЯ НА СДАЧУ БЕЛЬЯ\n';
+  t += '━━━━━━━━━━━━━━━━━━━━\n';
+  t += `🏠 Объект: ${obj}\n`;
+  t += `📤 Дата сдачи: ${sendDate}\n`;
+  t += '━━━━━━━━━━━━━━━━━━━━\n';
+  t += '👤 ПОДГОТОВИЛИ:\n';
+  preps.forEach((p, i) => {
+    t += `   ${i+1}. ${p.staff} — ${p.date}\n`;
+  });
+  t += '━━━━━━━━━━━━━━━━━━━━\n';
+
+  const beds = filled.filter(it => it.group==='bed');
+  const towels = filled.filter(it => it.group==='towel');
+  const other = filled.filter(it => it.group==='other');
+
+  if (beds.length > 0) {
+    t += '🛏 ПОСТЕЛЬНОЕ БЕЛЬЁ:\n';
+    beds.forEach(it => t += `   • ${it.name} — ${document.getElementById(it.id).textContent} шт\n`);
+  }
+  if (towels.length > 0) {
+    t += '🪴 ПОЛОТЕНЦА:\n';
+    towels.forEach(it => t += `   • ${it.name} — ${document.getElementById(it.id).textContent} шт\n`);
+  }
+  if (other.length > 0) {
+    t += '🧻 ПРОЧЕЕ:\n';
+    other.forEach(it => t += `   • ${it.name} — ${document.getElementById(it.id).textContent} шт\n`);
+  }
+
+  t += '━━━━━━━━━━━━━━━━━━━━\n';
+  t += `📦 ИТОГО: ${total} шт\n`;
+  t += '━━━━━━━━━━━━━━━━━━━━\n';
+  if (note) t += `💬 ${note}\n━━━━━━━━━━━━━━━━━━━━\n`;
+  t += '✅ Просим принять в стирку\n';
+  t += 'OLEAND Apartments';
+
+  document.getElementById('invoice').textContent = t;
+  document.getElementById('result')._text = t;
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth'});
+}
+
+function copyInvoice() {
+  const text = document.getElementById('result')._text;
+  const btn = document.getElementById('copyBtn');
+  const done = () => {
+    btn.textContent = '✅ Скопировано! Вставляй в Telegram';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = '📋 Скопировать накладную'; btn.classList.remove('done'); }, 3000);
+  };
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  } else { fallbackCopy(text, done); }
+}
+
+function fallbackCopy(text, cb) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta); cb();
+}
+
+function newForm() {
+  items.forEach(it => document.getElementById(it.id).textContent = '0');
+  document.getElementById('note').value = '';
+  document.getElementById('obj').value = '';
+  document.getElementById('result').style.display = 'none';
+  // Reset to 1 preparer
+  const rows = document.querySelectorAll('.prep-row');
+  rows.forEach((r, i) => { if(i > 0) r.remove(); });
+  prepCount = 1;
+  document.getElementById('addBtn').style.display = 'block';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
+</body>
+</html>
