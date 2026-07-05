@@ -180,6 +180,14 @@ textarea:focus{border-color:#621727}
 </div>
 </div>
 <div class="field">
+<div class="field-label">Полотенце малютка<small>маленькое</small></div>
+<div class="qty-wrap">
+<button class="qty-btn" onclick="ch('q12',-1)">−</button>
+<span class="qty-num" id="q12">0</span>
+<button class="qty-btn" onclick="ch('q12',1)">+</button>
+</div>
+</div>
+<div class="field">
 <div class="field-label">Полотенце для ног<small>коврик</small></div>
 <div class="qty-wrap">
 <button class="qty-btn" onclick="ch('q9',-1)">−</button>
@@ -295,6 +303,7 @@ const items = [
 {id:'q6', name:'Наволочка 1,5', group:'bed'},
 {id:'q7', name:'Полотенце большое', group:'towel'},
 {id:'q8', name:'Полотенце среднее', group:'towel'},
+{id:'q12',name:'Полотенце малютка', group:'towel'},
 {id:'q9', name:'Полотенце для ног', group:'towel'},
 {id:'q10',name:'Салфетка кухонная', group:'other'},
 {id:'q11',name:'Салфетка (клетка)', group:'other'},
