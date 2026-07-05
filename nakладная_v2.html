@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Накладная в прачку — OLEAND</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#F2F2F7;min-height:100vh;padding-bottom:40px}
@@ -232,6 +233,7 @@ textarea:focus{border-color:#621727}
 <div class="result" id="result">
 <div class="result-title">✅ Готово — скопируй и отправь в чат прачки</div>
 <div class="invoice-box" id="invoice"></div>
+<button class="btn-main" id="sendBtn" style="display:none;margin:0 0 8px" onclick="sendToBot()">📨 Отправить в Telegram</button>
 <button class="btn-copy" id="copyBtn" onclick="copyInvoice()">📋 Скопировать накладную</button>
 <button class="btn-new" onclick="newForm()">✏️ Заполнить новую</button>
 </div>
@@ -239,6 +241,10 @@ textarea:focus{border-color:#621727}
 </div>
 
 <script>
+// Если форма открыта внутри Telegram (Mini App) — включаем отправку боту
+const tgApp = (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) ? window.Telegram.WebApp : null;
+const BOT_URL = 'https://script.google.com/macros/s/AKfycbw5yFaycoIs3tgKE7U2uElBz8UuxdUcOY7RxLABN_fenDEut2E2lqBWltO-1lo-Dz_CNA/exec';
+if (tgApp) { tgApp.expand(); try { tgApp.setHeaderColor('#621727'); } catch(e) {} }
 // Set today
 document.getElementById('d0').value = new Date().toISOString().split('T')[0];
 
@@ -374,7 +380,17 @@ t += 'OLEAND Apartments';
 document.getElementById('invoice').textContent = t;
 document.getElementById('result')._text = t;
 document.getElementById('result').style.display = 'block';
+if (tgApp) document.getElementById('sendBtn').style.display = 'block';
 document.getElementById('result').scrollIntoView({behavior:'smooth'});
+}
+
+function sendToBot() {
+const text = document.getElementById('result')._text;
+const btn = document.getElementById('sendBtn');
+btn.textContent = '⏳ Отправляю...';
+fetch(BOT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ oleand: 'nakl', chat: tgApp.initDataUnsafe.user.id, text: text }) })
+.then(() => { btn.textContent = '✅ Отправлено в Telegram!'; setTimeout(() => tgApp.close(), 1500); })
+.catch(() => { btn.textContent = '⚠ Не получилось — скопируй кнопкой ниже'; });
 }
 
 function copyInvoice() {
