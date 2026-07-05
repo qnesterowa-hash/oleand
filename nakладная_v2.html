@@ -48,185 +48,185 @@ textarea:focus{border-color:#621727}
 <body>
 
 <div class="header">
-  <h1>🧺 Накладная в прачку</h1>
-  <p>OLEAND · Заполни и отправь в чат прачки</p>
+<h1>🧺 Накладная в прачку</h1>
+<p>OLEAND · Заполни и отправь в чат прачки</p>
 </div>
 
 <div class="content">
 
-  <!-- ОБЪЕКТ -->
-  <div class="card">
-    <div class="card-title">🏠 Объект</div>
-    <div class="field">
-      <div class="field-label">Выбери объект</div>
-      <select id="obj">
-        <option value="">— выбрать —</option>
-        <option>Петроградка б+м</option>
-        <option>Саперный б+м</option>
-        <option>Царская столица</option>
-        <option>BLUE Железнодор.</option>
-        <option>GREEN Тосина</option>
-        <option>NUDE Манчестерская</option>
-        <option>TIFFANY Ветеранов</option>
-        <option>GRAY Лиговский проспект</option>
-      </select>
-    </div>
-  </div>
+<!-- ОБЪЕКТ -->
+<div class="card">
+<div class="card-title">🏠 Объект</div>
+<div class="field">
+<div class="field-label">Выбери объект</div>
+<select id="obj">
+<option value="">— выбрать —</option>
+<option>Петроградка б+м</option>
+<option>Саперный б+м</option>
+<option>Царская столица</option>
+<option>BLUE Железнодор.</option>
+<option>GREEN Тосина</option>
+<option>NUDE Манчестерская</option>
+<option>TIFFANY Ветеранов</option>
+<option>GRAY Лиговский проспект</option>
+</select>
+</div>
+</div>
 
-  <!-- КТО ПОДГОТОВИЛ -->
-  <div class="card">
-    <div class="card-title">
-      👤 Кто подготовил бельё
-    </div>
-    <div id="prep-list">
-      <!-- Row 1 always shown -->
-      <div class="prep-row" id="prep-0">
-        <div class="prep-row-num">Уборка 1</div>
-        <div class="prep-fields">
-          <div>
-            <div class="prep-label">Дата уборки</div>
-            <input type="date" id="d0">
-          </div>
-          <div>
-            <div class="prep-label">Горничная</div>
-            <select id="s0">
-              <option value="">— выбрать —</option>
-              <option>Валерия</option>
-              <option>Мария</option>
-              <option>Анна</option>
-              <option>Гуля</option>
-              <option>Ольга</option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div style="padding:10px 16px" id="add-wrap">
-      <button class="add-btn" onclick="addPrep()" id="addBtn">+ Добавить ещё уборку</button>
-    </div>
-  </div>
+<!-- КТО ПОДГОТОВИЛ -->
+<div class="card">
+<div class="card-title">
+👤 Кто подготовил бельё
+</div>
+<div id="prep-list">
+<!-- Row 1 always shown -->
+<div class="prep-row" id="prep-0">
+<div class="prep-row-num">Уборка 1</div>
+<div class="prep-fields">
+<div>
+<div class="prep-label">Дата уборки</div>
+<input type="date" id="d0">
+</div>
+<div>
+<div class="prep-label">Горничная</div>
+<select id="s0">
+<option value="">— выбрать —</option>
+<option>Валерия</option>
+<option>Мария</option>
+<option>Анна</option>
+<option>Гуля</option>
+<option>Ольга</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+<div style="padding:10px 16px" id="add-wrap">
+<button class="add-btn" onclick="addPrep()" id="addBtn">+ Добавить ещё уборку</button>
+</div>
+</div>
 
-  <!-- ПОСТЕЛЬНОЕ БЕЛЬЁ -->
-  <div class="card">
-    <div class="card-title">🛏 Постельное бельё</div>
-    <div class="section-note">Общее количество за все уборки</div>
-    <div class="field">
-      <div class="field-label">Пododеяльник 2,0<small>двуспальный</small></div>
-      <div class="qty-wrap">
-        <button class="qty-btn" onclick="ch('q1',-1)">−</button>
-        <span class="qty-num" id="q1">0</span>
-        <button class="qty-btn" onclick="ch('q1',1)">+</button>
-      </div>
-    </div>
-    <div class="field">
-      <div class="field-label">Простыня 2,0<small>двуспальная</small></div>
-      <div class="qty-wrap">
-        <button class="qty-btn" onclick="ch('q2',-1)">−</button>
-        <span class="qty-num" id="q2">0</span>
-        <button class="qty-btn" onclick="ch('q2',1)">+</button>
-      </div>
-    </div>
-    <div class="field">
-      <div class="field-label">Наволочка 2,0<small>70x70</small></div>
-      <div class="qty-wrap">
-        <button class="qty-btn" onclick="ch('q3',-1)">−</button>
-        <span class="qty-num" id="q3">0</span>
-        <button class="qty-btn" onclick="ch('q3',1)">+</button>
-      </div>
-    </div>
-    <div class="field">
-      <div class="field-label">Пododеяльник 1,5<small>полуторный</small></div>
-      <div class="qty-wrap">
-        <button class="qty-btn" onclick="ch('q4',-1)">−</button>
-        <span class="qty-num" id="q4">0</span>
-        <button class="qty-btn" onclick="ch('q4',1)">+</button>
-      </div>
-    </div>
-    <div class="field">
-      <div class="field-label">Простыня 1,5<small>полуторная</small></div>
-      <div class="qty-wrap">
-        <button class="qty-btn" onclick="ch('q5',-1)">−</button>
-        <span class="qty-num" id="q5">0</span>
-        <button class="qty-btn" onclick="ch('q5',1)">+</button>
-      </div>
-    </div>
-    <div class="field">
-      <div class="field-label">Наволочка 1,5<small>50x70</small></div>
-      <div class="qty-wrap">
-        <button class="qty-btn" onclick="ch('q6',-1)">−</button>
-        <span class="qty-num" id="q6">0</span>
-        <button class="qty-btn" onclick="ch('q6',1)">+</button>
-      </div>
-    </div>
-  </div>
+<!-- ПОСТЕЛЬНОЕ БЕЛЬЁ -->
+<div class="card">
+<div class="card-title">🛏 Постельное бельё</div>
+<div class="section-note">Общее количество за все уборки</div>
+<div class="field">
+<div class="field-label">Пододеяльник 2,0<small>двуспальный</small></div>
+<div class="qty-wrap">
+<button class="qty-btn" onclick="ch('q1',-1)">−</button>
+<span class="qty-num" id="q1">0</span>
+<button class="qty-btn" onclick="ch('q1',1)">+</button>
+</div>
+</div>
+<div class="field">
+<div class="field-label">Простыня 2,0<small>двуспальная</small></div>
+<div class="qty-wrap">
+<button class="qty-btn" onclick="ch('q2',-1)">−</button>
+<span class="qty-num" id="q2">0</span>
+<button class="qty-btn" onclick="ch('q2',1)">+</button>
+</div>
+</div>
+<div class="field">
+<div class="field-label">Наволочка 2,0<small>70x70</small></div>
+<div class="qty-wrap">
+<button class="qty-btn" onclick="ch('q3',-1)">−</button>
+<span class="qty-num" id="q3">0</span>
+<button class="qty-btn" onclick="ch('q3',1)">+</button>
+</div>
+</div>
+<div class="field">
+<div class="field-label">Пододеяльник 1,5<small>полуторный</small></div>
+<div class="qty-wrap">
+<button class="qty-btn" onclick="ch('q4',-1)">−</button>
+<span class="qty-num" id="q4">0</span>
+<button class="qty-btn" onclick="ch('q4',1)">+</button>
+</div>
+</div>
+<div class="field">
+<div class="field-label">Простыня 1,5<small>полуторная</small></div>
+<div class="qty-wrap">
+<button class="qty-btn" onclick="ch('q5',-1)">−</button>
+<span class="qty-num" id="q5">0</span>
+<button class="qty-btn" onclick="ch('q5',1)">+</button>
+</div>
+</div>
+<div class="field">
+<div class="field-label">Наволочка 1,5<small>50x70</small></div>
+<div class="qty-wrap">
+<button class="qty-btn" onclick="ch('q6',-1)">−</button>
+<span class="qty-num" id="q6">0</span>
+<button class="qty-btn" onclick="ch('q6',1)">+</button>
+</div>
+</div>
+</div>
 
-  <!-- ПОЛОТЕНЦА -->
-  <div class="card">
-    <div class="card-title">🪴 Полотенца</div>
-    <div class="field">
-      <div class="field-label">Полотенце большое<small>банное</small></div>
-      <div class="qty-wrap">
-        <button class="qty-btn" onclick="ch('q7',-1)">−</button>
-        <span class="qty-num" id="q7">0</span>
-        <button class="qty-btn" onclick="ch('q7',1)">+</button>
-      </div>
-    </div>
-    <div class="field">
-      <div class="field-label">Полотенце среднее<small>для лица</small></div>
-      <div class="qty-wrap">
-        <button class="qty-btn" onclick="ch('q8',-1)">−</button>
-        <span class="qty-num" id="q8">0</span>
-        <button class="qty-btn" onclick="ch('q8',1)">+</button>
-      </div>
-    </div>
-    <div class="field">
-      <div class="field-label">Полотенце для ног<small>коврик</small></div>
-      <div class="qty-wrap">
-        <button class="qty-btn" onclick="ch('q9',-1)">−</button>
-        <span class="qty-num" id="q9">0</span>
-        <button class="qty-btn" onclick="ch('q9',1)">+</button>
-      </div>
-    </div>
-  </div>
+<!-- ПОЛОТЕНЦА -->
+<div class="card">
+<div class="card-title">🪴 Полотенца</div>
+<div class="field">
+<div class="field-label">Полотенце большое<small>банное</small></div>
+<div class="qty-wrap">
+<button class="qty-btn" onclick="ch('q7',-1)">−</button>
+<span class="qty-num" id="q7">0</span>
+<button class="qty-btn" onclick="ch('q7',1)">+</button>
+</div>
+</div>
+<div class="field">
+<div class="field-label">Полотенце среднее<small>для лица</small></div>
+<div class="qty-wrap">
+<button class="qty-btn" onclick="ch('q8',-1)">−</button>
+<span class="qty-num" id="q8">0</span>
+<button class="qty-btn" onclick="ch('q8',1)">+</button>
+</div>
+</div>
+<div class="field">
+<div class="field-label">Полотенце для ног<small>коврик</small></div>
+<div class="qty-wrap">
+<button class="qty-btn" onclick="ch('q9',-1)">−</button>
+<span class="qty-num" id="q9">0</span>
+<button class="qty-btn" onclick="ch('q9',1)">+</button>
+</div>
+</div>
+</div>
 
-  <!-- ПРОЧЕЕ -->
-  <div class="card">
-    <div class="card-title">🧻 Прочее</div>
-    <div class="field">
-      <div class="field-label">Салфетка кухонная</div>
-      <div class="qty-wrap">
-        <button class="qty-btn" onclick="ch('q10',-1)">−</button>
-        <span class="qty-num" id="q10">0</span>
-        <button class="qty-btn" onclick="ch('q10',1)">+</button>
-      </div>
-    </div>
-    <div class="field">
-      <div class="field-label">Салфетка (клетка)</div>
-      <div class="qty-wrap">
-        <button class="qty-btn" onclick="ch('q11',-1)">−</button>
-        <span class="qty-num" id="q11">0</span>
-        <button class="qty-btn" onclick="ch('q11',1)">+</button>
-      </div>
-    </div>
-  </div>
+<!-- ПРОЧЕЕ -->
+<div class="card">
+<div class="card-title">🧻 Прочее</div>
+<div class="field">
+<div class="field-label">Салфетка кухонная</div>
+<div class="qty-wrap">
+<button class="qty-btn" onclick="ch('q10',-1)">−</button>
+<span class="qty-num" id="q10">0</span>
+<button class="qty-btn" onclick="ch('q10',1)">+</button>
+</div>
+</div>
+<div class="field">
+<div class="field-label">Салфетка (клетка)</div>
+<div class="qty-wrap">
+<button class="qty-btn" onclick="ch('q11',-1)">−</button>
+<span class="qty-num" id="q11">0</span>
+<button class="qty-btn" onclick="ch('q11',1)">+</button>
+</div>
+</div>
+</div>
 
-  <!-- ЗАМЕЧАНИЯ -->
-  <div class="card">
-    <div class="card-title">💬 Замечания</div>
-    <div style="padding:12px 16px">
-      <textarea id="note" placeholder="Пятна, повреждения, особые пожелания..."></textarea>
-    </div>
-  </div>
+<!-- ЗАМЕЧАНИЯ -->
+<div class="card">
+<div class="card-title">💬 Замечания</div>
+<div style="padding:12px 16px">
+<textarea id="note" placeholder="Пятна, повреждения, особые пожелания..."></textarea>
+</div>
+</div>
 
-  <button class="btn-main" onclick="generate()">📄 Сформировать накладную</button>
+<button class="btn-main" onclick="generate()">📄 Сформировать накладную</button>
 
-  <!-- РЕЗУЛЬТАТ -->
-  <div class="result" id="result">
-    <div class="result-title">✅ Готово — скопируй и отправь в чат прачки</div>
-    <div class="invoice-box" id="invoice"></div>
-    <button class="btn-copy" id="copyBtn" onclick="copyInvoice()">📋 Скопировать накладную</button>
-    <button class="btn-new" onclick="newForm()">✏️ Заполнить новую</button>
-  </div>
+<!-- РЕЗУЛЬТАТ -->
+<div class="result" id="result">
+<div class="result-title">✅ Готово — скопируй и отправь в чат прачки</div>
+<div class="invoice-box" id="invoice"></div>
+<button class="btn-copy" id="copyBtn" onclick="copyInvoice()">📋 Скопировать накладную</button>
+<button class="btn-new" onclick="newForm()">✏️ Заполнить новую</button>
+</div>
 
 </div>
 
@@ -238,167 +238,168 @@ let prepCount = 1;
 const MAX_PREP = 3;
 
 function addPrep() {
-  if (prepCount >= MAX_PREP) return;
-  const idx = prepCount;
-  const div = document.createElement('div');
-  div.className = 'prep-row';
-  div.id = 'prep-' + idx;
-  const today = new Date().toISOString().split('T')[0];
-  div.innerHTML = `
-    <div class="prep-row-num">Уборка ${idx+1}</div>
-    <button class="remove-btn" onclick="removePrep(${idx})">×</button>
-    <div class="prep-fields">
-      <div>
-        <div class="prep-label">Дата уборки</div>
-        <input type="date" id="d${idx}" value="${today}">
-      </div>
-      <div>
-        <div class="prep-label">Горничная</div>
-        <select id="s${idx}">
-          <option value="">— выбрать —</option>
-          <option>Валерия</option>
-          <option>Мария</option>
-          <option>Анна</option>
-          <option>Гуля</option>
-        </select>
-      </div>
-    </div>`;
-  document.getElementById('prep-list').appendChild(div);
-  prepCount++;
-  if (prepCount >= MAX_PREP) {
-    document.getElementById('addBtn').style.display = 'none';
-  }
+if (prepCount >= MAX_PREP) return;
+const idx = prepCount;
+const div = document.createElement('div');
+div.className = 'prep-row';
+div.id = 'prep-' + idx;
+const today = new Date().toISOString().split('T')[0];
+div.innerHTML = `
+<div class="prep-row-num">Уборка ${idx+1}</div>
+<button class="remove-btn" onclick="removePrep(${idx})">×</button>
+<div class="prep-fields">
+<div>
+<div class="prep-label">Дата уборки</div>
+<input type="date" id="d${idx}" value="${today}">
+</div>
+<div>
+<div class="prep-label">Горничная</div>
+<select id="s${idx}">
+<option value="">— выбрать —</option>
+<option>Валерия</option>
+<option>Мария</option>
+<option>Анна</option>
+<option>Гуля</option>
+<option>Ольга</option>
+</select>
+</div>
+</div>`;
+document.getElementById('prep-list').appendChild(div);
+prepCount++;
+if (prepCount >= MAX_PREP) {
+document.getElementById('addBtn').style.display = 'none';
+}
 }
 
 function removePrep(idx) {
-  const el = document.getElementById('prep-' + idx);
-  if (el) el.remove();
-  prepCount--;
-  document.getElementById('addBtn').style.display = 'block';
-  // Renumber
-  const rows = document.querySelectorAll('.prep-row');
-  rows.forEach((r, i) => { const n = r.querySelector('.prep-row-num'); if(n) n.textContent = `Уборка ${i+1}`; });
+const el = document.getElementById('prep-' + idx);
+if (el) el.remove();
+prepCount--;
+document.getElementById('addBtn').style.display = 'block';
+// Renumber
+const rows = document.querySelectorAll('.prep-row');
+rows.forEach((r, i) => { const n = r.querySelector('.prep-row-num'); if(n) n.textContent = `Уборка ${i+1}`; });
 }
 
 function ch(id, delta) {
-  const el = document.getElementById(id);
-  el.textContent = Math.max(0, parseInt(el.textContent) + delta);
+const el = document.getElementById(id);
+el.textContent = Math.max(0, parseInt(el.textContent) + delta);
 }
 
 const items = [
-  {id:'q1', name:'Пododеяльник 2,0',  group:'bed'},
-  {id:'q2', name:'Простыня 2,0',       group:'bed'},
-  {id:'q3', name:'Наволочка 2,0',      group:'bed'},
-  {id:'q4', name:'Пododеяльник 1,5',  group:'bed'},
-  {id:'q5', name:'Простыня 1,5',       group:'bed'},
-  {id:'q6', name:'Наволочка 1,5',      group:'bed'},
-  {id:'q7', name:'Полотенце большое',  group:'towel'},
-  {id:'q8', name:'Полотенце среднее',  group:'towel'},
-  {id:'q9', name:'Полотенце для ног',  group:'towel'},
-  {id:'q10',name:'Салфетка кухонная', group:'other'},
-  {id:'q11',name:'Салфетка (клетка)', group:'other'},
+{id:'q1', name:'Пододеяльник 2,0', group:'bed'},
+{id:'q2', name:'Простыня 2,0', group:'bed'},
+{id:'q3', name:'Наволочка 2,0', group:'bed'},
+{id:'q4', name:'Пододеяльник 1,5', group:'bed'},
+{id:'q5', name:'Простыня 1,5', group:'bed'},
+{id:'q6', name:'Наволочка 1,5', group:'bed'},
+{id:'q7', name:'Полотенце большое', group:'towel'},
+{id:'q8', name:'Полотенце среднее', group:'towel'},
+{id:'q9', name:'Полотенце для ног', group:'towel'},
+{id:'q10',name:'Салфетка кухонная', group:'other'},
+{id:'q11',name:'Салфетка (клетка)', group:'other'},
 ];
 
 function generate() {
-  const obj  = document.getElementById('obj').value;
-  const note = document.getElementById('note').value.trim();
+const obj = document.getElementById('obj').value;
+const note = document.getElementById('note').value.trim();
 
-  if (!obj) { alert('Выбери объект!'); return; }
+if (!obj) { alert('Выбери объект!'); return; }
 
-  // Collect preparers
-  const preps = [];
-  document.querySelectorAll('.prep-row').forEach((row, i) => {
-    const di = row.querySelector('input[type=date]');
-    const si = row.querySelector('select');
-    if (di && si && di.value && si.value) {
-      preps.push({
-        date: di.value.split('-').reverse().join('.'),
-        staff: si.value
-      });
-    }
-  });
-  if (preps.length === 0) { alert('Укажи хотя бы одну дату и горничную!'); return; }
+// Collect preparers
+const preps = [];
+document.querySelectorAll('.prep-row').forEach((row, i) => {
+const di = row.querySelector('input[type=date]');
+const si = row.querySelector('select');
+if (di && si && di.value && si.value) {
+preps.push({
+date: di.value.split('-').reverse().join('.'),
+staff: si.value
+});
+}
+});
+if (preps.length === 0) { alert('Укажи хотя бы одну дату и горничную!'); return; }
 
-  const filled = items.filter(it => parseInt(document.getElementById(it.id).textContent) > 0);
-  if (filled.length === 0) { alert('Добавь хотя бы одну позицию белья!'); return; }
+const filled = items.filter(it => parseInt(document.getElementById(it.id).textContent) > 0);
+if (filled.length === 0) { alert('Добавь хотя бы одну позицию белья!'); return; }
 
-  const total = filled.reduce((s,it) => s + parseInt(document.getElementById(it.id).textContent), 0);
-  const sendDate = new Date().toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'numeric'});
+const total = filled.reduce((s,it) => s + parseInt(document.getElementById(it.id).textContent), 0);
+const sendDate = new Date().toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'numeric'});
 
-  let t = '';
-  t += '📋 НАКЛАДНАЯ НА СДАЧУ БЕЛЬЯ\n';
-  t += '━━━━━━━━━━━━━━━━━━━━\n';
-  t += `🏠 Объект: ${obj}\n`;
-  t += `📤 Дата сдачи: ${sendDate}\n`;
-  t += '━━━━━━━━━━━━━━━━━━━━\n';
-  t += '👤 ПОДГОТОВИЛИ:\n';
-  preps.forEach((p, i) => {
-    t += `   ${i+1}. ${p.staff} — ${p.date}\n`;
-  });
-  t += '━━━━━━━━━━━━━━━━━━━━\n';
+let t = '';
+t += '📋 НАКЛАДНАЯ НА СДАЧУ БЕЛЬЯ\n';
+t += '━━━━━━━━━━━━━━━━━━━━\n';
+t += `🏠 Объект: ${obj}\n`;
+t += `📤 Дата сдачи: ${sendDate}\n`;
+t += '━━━━━━━━━━━━━━━━━━━━\n';
+t += '👤 ПОДГОТОВИЛИ:\n';
+preps.forEach((p, i) => {
+t += ` ${i+1}. ${p.staff} — ${p.date}\n`;
+});
+t += '━━━━━━━━━━━━━━━━━━━━\n';
 
-  const beds = filled.filter(it => it.group==='bed');
-  const towels = filled.filter(it => it.group==='towel');
-  const other = filled.filter(it => it.group==='other');
+const beds = filled.filter(it => it.group==='bed');
+const towels = filled.filter(it => it.group==='towel');
+const other = filled.filter(it => it.group==='other');
 
-  if (beds.length > 0) {
-    t += '🛏 ПОСТЕЛЬНОЕ БЕЛЬЁ:\n';
-    beds.forEach(it => t += `   • ${it.name} — ${document.getElementById(it.id).textContent} шт\n`);
-  }
-  if (towels.length > 0) {
-    t += '🪴 ПОЛОТЕНЦА:\n';
-    towels.forEach(it => t += `   • ${it.name} — ${document.getElementById(it.id).textContent} шт\n`);
-  }
-  if (other.length > 0) {
-    t += '🧻 ПРОЧЕЕ:\n';
-    other.forEach(it => t += `   • ${it.name} — ${document.getElementById(it.id).textContent} шт\n`);
-  }
+if (beds.length > 0) {
+t += '🛏 ПОСТЕЛЬНОЕ БЕЛЬЁ:\n';
+beds.forEach(it => t += ` • ${it.name} — ${document.getElementById(it.id).textContent} шт\n`);
+}
+if (towels.length > 0) {
+t += '🪴 ПОЛОТЕНЦА:\n';
+towels.forEach(it => t += ` • ${it.name} — ${document.getElementById(it.id).textContent} шт\n`);
+}
+if (other.length > 0) {
+t += '🧻 ПРОЧЕЕ:\n';
+other.forEach(it => t += ` • ${it.name} — ${document.getElementById(it.id).textContent} шт\n`);
+}
 
-  t += '━━━━━━━━━━━━━━━━━━━━\n';
-  t += `📦 ИТОГО: ${total} шт\n`;
-  t += '━━━━━━━━━━━━━━━━━━━━\n';
-  if (note) t += `💬 ${note}\n━━━━━━━━━━━━━━━━━━━━\n`;
-  t += '✅ Просим принять в стирку\n';
-  t += 'OLEAND Apartments';
+t += '━━━━━━━━━━━━━━━━━━━━\n';
+t += `📦 ИТОГО: ${total} шт\n`;
+t += '━━━━━━━━━━━━━━━━━━━━\n';
+if (note) t += `💬 ${note}\n━━━━━━━━━━━━━━━━━━━━\n`;
+t += '✅ Просим принять в стирку\n';
+t += 'OLEAND Apartments';
 
-  document.getElementById('invoice').textContent = t;
-  document.getElementById('result')._text = t;
-  document.getElementById('result').style.display = 'block';
-  document.getElementById('result').scrollIntoView({behavior:'smooth'});
+document.getElementById('invoice').textContent = t;
+document.getElementById('result')._text = t;
+document.getElementById('result').style.display = 'block';
+document.getElementById('result').scrollIntoView({behavior:'smooth'});
 }
 
 function copyInvoice() {
-  const text = document.getElementById('result')._text;
-  const btn = document.getElementById('copyBtn');
-  const done = () => {
-    btn.textContent = '✅ Скопировано! Вставляй в Telegram';
-    btn.classList.add('done');
-    setTimeout(() => { btn.textContent = '📋 Скопировать накладную'; btn.classList.remove('done'); }, 3000);
-  };
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
-  } else { fallbackCopy(text, done); }
+const text = document.getElementById('result')._text;
+const btn = document.getElementById('copyBtn');
+const done = () => {
+btn.textContent = '✅ Скопировано! Вставляй в Telegram';
+btn.classList.add('done');
+setTimeout(() => { btn.textContent = '📋 Скопировать накладную'; btn.classList.remove('done'); }, 3000);
+};
+if (navigator.clipboard) {
+navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+} else { fallbackCopy(text, done); }
 }
 
 function fallbackCopy(text, cb) {
-  const ta = document.createElement('textarea');
-  ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
-  document.body.appendChild(ta); ta.select();
-  document.execCommand('copy');
-  document.body.removeChild(ta); cb();
+const ta = document.createElement('textarea');
+ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+document.body.appendChild(ta); ta.select();
+document.execCommand('copy');
+document.body.removeChild(ta); cb();
 }
 
 function newForm() {
-  items.forEach(it => document.getElementById(it.id).textContent = '0');
-  document.getElementById('note').value = '';
-  document.getElementById('obj').value = '';
-  document.getElementById('result').style.display = 'none';
-  // Reset to 1 preparer
-  const rows = document.querySelectorAll('.prep-row');
-  rows.forEach((r, i) => { if(i > 0) r.remove(); });
-  prepCount = 1;
-  document.getElementById('addBtn').style.display = 'block';
-  window.scrollTo({top:0, behavior:'smooth'});
+items.forEach(it => document.getElementById(it.id).textContent = '0');
+document.getElementById('note').value = '';
+document.getElementById('obj').value = '';
+document.getElementById('result').style.display = 'none';
+// Reset to 1 preparer
+const rows = document.querySelectorAll('.prep-row');
+rows.forEach((r, i) => { if(i > 0) r.remove(); });
+prepCount = 1;
+document.getElementById('addBtn').style.display = 'block';
+window.scrollTo({top:0, behavior:'smooth'});
 }
 </script>
 </body>
