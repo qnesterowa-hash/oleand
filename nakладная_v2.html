@@ -159,6 +159,14 @@ textarea:focus{border-color:#621727}
 <button class="qty-btn" onclick="ch('q6',1)">+</button>
 </div>
 </div>
+<div class="field">
+<div class="field-label">Наволочка декоративная (клетка)<small>только Саперный</small></div>
+<div class="qty-wrap">
+<button class="qty-btn" onclick="ch('q13',-1)">−</button>
+<span class="qty-num" id="q13">0</span>
+<button class="qty-btn" onclick="ch('q13',1)">+</button>
+</div>
+</div>
 </div>
 
 <!-- ПОЛОТЕНЦА -->
@@ -313,6 +321,7 @@ const items = [
 {id:'q9', name:'Полотенце для ног', group:'towel'},
 {id:'q10',name:'Салфетка кухонная', group:'other'},
 {id:'q11',name:'Салфетка (клетка)', group:'other'},
+{id:'q13',name:'Наволочка декоративная (клетка)', group:'bed'},
 ];
 
 function generate() {
