@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Остатки — OLEAND</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#F2F2F7;min-height:100vh;padding-bottom:40px}
+.header{background:#621727;padding:20px 16px 18px;text-align:center;color:#fff}
+.header h1{font-size:20px;font-weight:700}
+.header p{font-size:13px;opacity:.8;margin-top:4px}
+.content{padding:14px}
+.card{background:#fff;border-radius:16px;margin-bottom:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.card-title{background:#621727;color:#fff;padding:12px 16px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+.row{padding:11px 16px;border-bottom:.5px solid #F2F2F7;display:flex;align-items:center;gap:10px}
+.row:last-child{border-bottom:none}
+.row-name{font-size:14px;color:#1C1C1E;flex:1}
+.badge{font-size:13px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap}
+.badge-total{background:#F2F2F7;color:#1C1C1E}
+.badge-laundry{background:#621727;color:#fff}
+.legend{padding:8px 16px 2px;font-size:12px;color:#8E8E93;font-style:italic}
+.msg{background:#fff;border-radius:16px;padding:24px 16px;text-align:center;color:#8E8E93;font-size:14px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>📊 Остатки белья</h1>
+<p>OLEAND · На объектах и в прачке</p>
+</div>
+
+<div class="content">
+<div class="legend">🏠 на объекте &nbsp;·&nbsp; 🧺 в прачке</div>
+<div class="msg" id="loading">⏳ Загружаю остатки...</div>
+<div id="list"></div>
+</div>
+
+<script>
+const tgApp = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+const BOT_URL = 'https://script.google.com/macros/s/AKfycbw5yFaycoIs3tgKE7U2uElBz8UuxdUcOY7RxLABN_fenDEut2E2lqBWltO-1lo-Dz_CNA/exec';
+if (tgApp) { tgApp.expand(); try { tgApp.setHeaderColor('#621727'); } catch(e) {} }
+
+fetch(BOT_URL + '?api=balance')
+.then(r => r.json())
+.then(data => {
+  const objects = data.objects || [];
+  const loading = document.getElementById('loading');
+  const list = document.getElementById('list');
+  if (objects.length === 0) { loading.textContent = 'Пока нет данных'; return; }
+  let html = '';
+  let anyNumbers = false;
+  objects.forEach(o => {
+    // Показываем только позиции, где что-то есть (на объекте или в прачке)
+    const rows = o.items.filter(it => Number(it.total) > 0 || Number(it.laundry) > 0);
+    if (rows.length === 0) return;
+    anyNumbers = true;
+    html += '<div class="card"><div class="card-title">🏠 ' + esc(o.obj) + '</div>';
+    rows.forEach(it => {
+      html += '<div class="row"><div class="row-name">' + esc(it.name) + '</div>';
+      if (Number(it.total) > 0) html += '<span class="badge badge-total">🏠 ' + esc(it.total) + '</span>';
+      if (Number(it.laundry) > 0) html += '<span class="badge badge-laundry">🧺 ' + esc(it.laundry) + '</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+  if (!anyNumbers) {
+    loading.textContent = 'Остатки пока не заполнены. Продиктуй боту базовые количества — и здесь появятся цифры. А колонка «в прачке» наполнится сама после первой сдачи через форму.';
+    return;
+  }
+  loading.style.display = 'none';
+  list.innerHTML = html;
+})
+.catch(() => {
+  document.getElementById('loading').textContent = '⚠ Не удалось загрузить. Проверь интернет и открой заново.';
+});
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+</script>
+</body>
+</html>

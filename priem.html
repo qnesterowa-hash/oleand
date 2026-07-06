@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Приём из прачки — OLEAND</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#F2F2F7;min-height:100vh;padding-bottom:40px}
+.header{background:#621727;padding:20px 16px 18px;text-align:center;color:#fff}
+.header h1{font-size:20px;font-weight:700}
+.header p{font-size:13px;opacity:.8;margin-top:4px}
+.content{padding:14px}
+.card{background:#fff;border-radius:16px;margin-bottom:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.card-title{background:#621727;color:#fff;padding:12px 16px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+.field{padding:12px 16px;border-bottom:.5px solid #F2F2F7;display:flex;align-items:center;gap:12px}
+.field:last-child{border-bottom:none}
+.field-label{font-size:14px;color:#1C1C1E;flex:1}
+.field-label small{display:block;font-size:11px;color:#8E8E93;margin-top:1px}
+.chk{width:26px;height:26px;flex-shrink:0;accent-color:#621727}
+.qty-badge{font-size:15px;font-weight:700;color:#621727;min-width:52px;text-align:right}
+.msg{background:#fff;border-radius:16px;padding:24px 16px;text-align:center;color:#8E8E93;font-size:14px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.btn-main{width:100%;padding:17px;background:#621727;color:#fff;border:none;border-radius:14px;font-size:17px;font-weight:700;cursor:pointer;margin-top:4px}
+.btn-main:active{opacity:.85}
+.btn-main:disabled{opacity:.5}
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>📦 Приём из прачки</h1>
+<p>OLEAND · Отметь галочками, что вернулось</p>
+</div>
+
+<div class="content">
+<div class="msg" id="loading">⏳ Загружаю список сданного...</div>
+<div id="list"></div>
+<button class="btn-main" id="recvBtn" style="display:none" onclick="confirmRecv()">✅ Принять отмеченное</button>
+</div>
+
+<script>
+const tgApp = (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) ? window.Telegram.WebApp : null;
+const BOT_URL = 'https://script.google.com/macros/s/AKfycbw5yFaycoIs3tgKE7U2uElBz8UuxdUcOY7RxLABN_fenDEut2E2lqBWltO-1lo-Dz_CNA/exec';
+if (tgApp) { tgApp.expand(); try { tgApp.setHeaderColor('#621727'); } catch(e) {} }
+
+let allItems = [];
+
+fetch(BOT_URL + '?api=pending')
+.then(r => r.json())
+.then(data => {
+  allItems = data.items || [];
+  render();
+})
+.catch(() => {
+  document.getElementById('loading').textContent = '⚠ Не удалось загрузить. Проверь интернет и открой форму заново.';
+});
+
+function render() {
+  const loading = document.getElementById('loading');
+  const list = document.getElementById('list');
+  if (allItems.length === 0) {
+    loading.textContent = '✅ Сейчас в прачке ничего нет';
+    return;
+  }
+  loading.style.display = 'none';
+  // Группируем по объекту
+  const groups = {};
+  allItems.forEach(it => { if (!groups[it.obj]) groups[it.obj] = []; groups[it.obj].push(it); });
+  let html = '';
+  for (const obj in groups) {
+    html += '<div class="card"><div class="card-title">🏠 ' + esc(obj) + '</div>';
+    groups[obj].forEach(it => {
+      const d = String(it.date).slice(0, 10);
+      html += '<label class="field"><input type="checkbox" class="chk" checked data-id="' + esc(it.id) + '">' +
+        '<div class="field-label">' + esc(it.name) + '<small>сдано ' + esc(d) + '</small></div>' +
+        '<div class="qty-badge">' + esc(it.qty) + ' шт</div></label>';
+    });
+    html += '</div>';
+  }
+  list.innerHTML = html;
+  document.getElementById('recvBtn').style.display = 'block';
+}
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function confirmRecv() {
+  const ids = Array.from(document.querySelectorAll('.chk:checked')).map(c => c.dataset.id);
+  if (ids.length === 0) { alert('Отметь хотя бы одну позицию!'); return; }
+  if (!tgApp) { alert('Открой эту форму через кнопку в боте OLEAND Помощник — тогда подтверждение придёт в чат.'); return; }
+  const btn = document.getElementById('recvBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Отправляю...';
+  fetch(BOT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ oleand: 'recv', chat: tgApp.initDataUnsafe.user.id, ids: ids }) })
+  .then(() => { btn.textContent = '✅ Принято! Подтверждение в чате'; setTimeout(() => tgApp.close(), 1500); })
+  .catch(() => { btn.disabled = false; btn.textContent = '⚠ Не вышло, попробуй ещё раз'; });
+}
+</script>
+</body>
+</html>

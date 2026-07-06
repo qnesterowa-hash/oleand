@@ -388,7 +388,10 @@ function sendToBot() {
 const text = document.getElementById('result')._text;
 const btn = document.getElementById('sendBtn');
 btn.textContent = '⏳ Отправляю...';
-fetch(BOT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ oleand: 'nakl', chat: tgApp.initDataUnsafe.user.id, text: text }) })
+const obj = document.getElementById('obj').value;
+const itemsArr = items.filter(it => parseInt(document.getElementById(it.id).textContent) > 0).map(it => ({ name: it.name, qty: parseInt(document.getElementById(it.id).textContent) }));
+const who = Array.from(document.querySelectorAll('.prep-row select')).map(s => s.value).filter(v => v).join(', ');
+fetch(BOT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ oleand: 'nakl', chat: tgApp.initDataUnsafe.user.id, text: text, obj: obj, items: itemsArr, who: who }) })
 .then(() => { btn.textContent = '✅ Отправлено в Telegram!'; setTimeout(() => tgApp.close(), 1500); })
 .catch(() => { btn.textContent = '⚠ Не получилось — скопируй кнопкой ниже'; });
 }
