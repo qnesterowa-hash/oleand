@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OLEAND — накладная</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--wine:#3B0B0B;--wine2:#521212;--cream:#F7F1E8;--paper:#FFFCF7;--gold:#C9A96A;--ink:#2B1A14}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--cream);font-family:Manrope,system-ui,sans-serif;color:var(--ink);padding:14px 10px 40px}
+.card{max-width:520px;margin:0 auto;background:var(--paper);border-radius:18px;overflow:hidden;box-shadow:0 6px 30px rgba(59,11,11,.18)}
+.head{background:linear-gradient(160deg,var(--wine),var(--wine2));color:var(--cream);text-align:center;padding:26px 16px 20px}
+.crown{font-size:15px;color:var(--gold);letter-spacing:2px}
+.logo{font-family:'Playfair Display',serif;font-size:32px;letter-spacing:8px;margin-top:2px}
+.sub{font-size:9px;letter-spacing:5px;opacity:.75;margin-top:5px}
+.title{text-align:center;padding:20px 16px 4px}
+.title h1{font-family:'Playfair Display',serif;font-size:19px;color:var(--wine);letter-spacing:1px}
+.meta{font-size:13px;color:#7a5c50;margin-top:8px;line-height:1.7}
+.badge{display:inline-block;margin-top:10px;padding:5px 16px;border-radius:20px;font-size:12px;font-weight:800;background:var(--cream);color:var(--wine);border:1px solid var(--gold)}
+table{width:100%;border-collapse:collapse;margin-top:16px}
+th{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--gold);text-align:left;padding:8px 20px;border-bottom:1px solid #eadfce}
+th:last-child{text-align:right}
+td{padding:11px 20px;font-size:15px;border-bottom:1px solid #f3ead9}
+td.q{text-align:right;font-weight:800;color:var(--wine);white-space:nowrap}
+.objrow td{background:var(--cream);font-weight:800;color:var(--wine);font-size:14px}
+.total{display:flex;justify-content:space-between;padding:18px 20px;font-weight:800;font-size:17px;color:var(--wine)}
+.foot{background:var(--wine);color:var(--cream);text-align:center;font-size:11px;padding:14px;letter-spacing:1px}
+.load{text-align:center;padding:44px 20px;color:#7a5c50;font-size:14px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="head">
+    <div class="crown">♕</div>
+    <div class="logo">OLEAND</div>
+    <div class="sub">APARTMENTS</div>
+  </div>
+  <div id="c" class="load">Загружаем накладную…</div>
+  <div class="foot">С любовью и заботой, OLEAND 🤍</div>
+</div>
+<script>
+var EXEC = 'https://script.google.com/macros/s/AKfycbw5yFaycoIs3tgKE7U2uElBz8UuxdUcOY7RxLABN_fenDEut2E2lqBWltO-1lo-Dz_CNA/exec';
+var id = new URLSearchParams(location.search).get('id') || '';
+var api = id.charAt(0) === 'S' ? 'ship' : 'nakl';
+var ST = {
+  'черновик': 'Черновик — ждёт подтверждения',
+  'подготовлено': 'Подтверждена горничной',
+  'в прачке': 'Отгружено в прачку',
+  'принято': 'Принято из прачки',
+  'отменено': 'Отменена'
+};
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+fetch(EXEC + '?api=' + api + '&id=' + encodeURIComponent(id))
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    var c = document.getElementById('c');
+    if (!d.ok || !d.items || !d.items.length) { c.textContent = 'Накладная не найдена'; return; }
+    var h = '<div class="title"><h1>' + (api === 'ship' ? 'НАКЛАДНАЯ — ФАКТ ОТГРУЗКИ' : 'НАКЛАДНАЯ НА БЕЛЬЁ') + '</h1>' +
+      '<div class="meta">№ ' + esc(id) + '<br>' + esc(d.date || '') + (d.obj ? '<br>🏠 ' + esc(d.obj) : '') + '</div>' +
+      (d.status ? '<span class="badge">' + esc(ST[d.status] || d.status) + '</span>' : '') + '</div>';
+    h += '<table><tr><th>Позиция</th><th>Кол-во</th></tr>';
+    var tot = 0;
+    if (api === 'ship') {
+      var cur = '';
+      d.items.forEach(function(it){
+        if (it.obj !== cur) { cur = it.obj; h += '<tr class="objrow"><td colspan="2">🏠 ' + esc(cur) + '</td></tr>'; }
+        h += '<tr><td>' + esc(it.name) + '</td><td class="q">' + it.qty + ' шт</td></tr>'; tot += Number(it.qty);
+      });
+    } else {
+      d.items.forEach(function(it){
+        h += '<tr><td>' + esc(it.name) + '</td><td class="q">' + it.qty + ' шт</td></tr>'; tot += Number(it.qty);
+      });
+    }
+    h += '</table><div class="total"><span>ИТОГО</span><span>' + tot + ' шт</span></div>';
+    c.className = ''; c.innerHTML = h;
+  })
+  .catch(function(){ document.getElementById('c').textContent = 'Не удалось загрузить. Проверьте интернет и попробуйте ещё раз.'; });
+</script>
+</body>
+</html>
