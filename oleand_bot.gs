@@ -683,7 +683,7 @@ function doPost(e) {
     if (u.callback_query) {
       var cd = String(u.callback_query.data || '');
       // Кнопки черновиков и забора (ЭТАП 8)
-      if (/^(dok|ded|dmn|dbk|dno|pk)\|/.test(cd)) { handleDraftCb(u.callback_query); return HtmlService.createHtmlOutput('ok'); }
+      if (/^(dok|ded|dmn|dpl|dzz|dbk|dno|pk)\|/.test(cd)) { handleDraftCb(u.callback_query); return HtmlService.createHtmlOutput('ok'); }
       // Сверка по запросу
       if (cd === 'rep|0') {
         tg('answerCallbackQuery', { callback_query_id: u.callback_query.id });
@@ -736,3 +736,74 @@ function setupStage8() {
 // Проверки без отправки в Telegram
 function testDraftToday() { sendDraftNakl(); Logger.log('Черновики разосланы (если сегодня есть выезды)'); }
 function testMonthly() { Logger.log(monthlyText()); }
+
+// ========== ЭТАП 9.1: УДОБНОЕ ИЗМЕНЕНИЕ КОЛИЧЕСТВА (➖ и ➕) ==========
+function kbDraftEdit(id) {
+  var rows = draftRows(id);
+  var kb = [];
+  for (var i = 0; i < rows.length; i++) {
+    var sfx = rows[i].id.split('_')[1];
+    kb.push([
+      { text: '➖', callback_data: 'dmn|' + id + '|' + sfx },
+      { text: rows[i].name + ': ' + rows[i].qty, callback_data: 'dzz|0' },
+      { text: '➕', callback_data: 'dpl|' + id + '|' + sfx }
+    ]);
+  }
+  kb.push([{ text: '✅ Готово', callback_data: 'dbk|' + id }]);
+  return kb;
+}
+
+function editText(id) {
+  var rows = draftRows(id);
+  var t = '✏️ <b>Изменить количество</b>\nНажимайте ➖ или ➕ рядом с позицией. Когда всё верно — «✅ Готово».';
+  if (!rows.length) return t;
+  var total = 0;
+  for (var i = 0; i < rows.length; i++) total += rows[i].qty;
+  return t + '\n\n🏠 <b>' + rows[0].obj + '</b>\n📦 Итого: ' + total + ' шт';
+}
+
+function handleDraftCb(cb) {
+  var chat = cb.message.chat.id;
+  var mid = cb.message.message_id;
+  var d = cb.data.split('|');
+  tg('answerCallbackQuery', { callback_query_id: cb.id });
+
+  if (d[0] === 'dok') {
+    var rows = draftRows(d[1]);
+    var fresh = rows.filter(function (r) { return r.status === 'черновик'; });
+    if (!fresh.length) { editMsg(chat, mid, (draftText(d[1], '📋 <b>Накладная</b>') || '') + '\n\n☑️ Уже обработана ранее.'); return; }
+    var sh = getLaundrySheet();
+    for (var i = 0; i < fresh.length; i++) sh.getRange(fresh[i].row, 6).setValue('подготовлено');
+    editMsg(chat, mid, draftText(d[1], '✅ <b>Подготовлено к сдаче в прачку</b>') + '\n\nБельё копится до забора прачкой.', kbView(d[1]));
+    notifyPrepared();
+
+  } else if (d[0] === 'ded') {
+    editMsg(chat, mid, editText(d[1]), kbDraftEdit(d[1]));
+
+  } else if (d[0] === 'dmn' || d[0] === 'dpl') {
+    var rows2 = draftRows(d[1]);
+    var changed = false;
+    for (var j = 0; j < rows2.length; j++) {
+      if (rows2[j].id === d[1] + '_' + d[2] && rows2[j].status === 'черновик') {
+        var q = rows2[j].qty + (d[0] === 'dpl' ? 1 : -1);
+        if (q < 0) q = 0;
+        if (q > 30) q = 30;
+        if (q !== rows2[j].qty) { getLaundrySheet().getRange(rows2[j].row, 5).setValue(q); changed = true; }
+        break;
+      }
+    }
+    if (changed) editMsg(chat, mid, editText(d[1]), kbDraftEdit(d[1]));
+
+  } else if (d[0] === 'dbk') {
+    editMsg(chat, mid, draftText(d[1], '📋 <b>Накладная — черновик</b>') + '\n\nПроверьте и подтвердите 👇', kbDraft(d[1]));
+
+  } else if (d[0] === 'dno') {
+    var rows3 = draftRows(d[1]);
+    var sh3 = getLaundrySheet();
+    for (var n = 0; n < rows3.length; n++) if (rows3[n].status === 'черновик') sh3.getRange(rows3[n].row, 6).setValue('отменено');
+    editMsg(chat, mid, '❌ Накладная отменена (' + (rows3.length ? rows3[0].obj : '') + ').');
+
+  } else if (d[0] === 'pk') {
+    doPickup(chat, mid);
+  }
+}
