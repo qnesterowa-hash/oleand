@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Чек-лист расходников — OLEAND</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#F2F2F7;min-height:100vh;padding-bottom:40px}
+.header{background:#621727;padding:20px 16px 18px;text-align:center;color:#fff}
+.header h1{font-size:20px;font-weight:700}
+.header p{font-size:13px;opacity:.8;margin-top:4px}
+.content{padding:14px}
+.card{background:#fff;border-radius:16px;margin-bottom:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.card-title{background:#621727;color:#fff;padding:12px 16px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;display:flex;align-items:center;justify-content:space-between}
+.card-title .cnt{font-size:11px;font-weight:400;opacity:.85}
+.field{padding:12px 16px;border-bottom:.5px solid #F2F2F7;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.field:last-child{border-bottom:none}
+.field-label{font-size:14px;color:#1C1C1E;flex:1}
+.field select,.field input[type=date]{border:1.5px solid #E5E5EA;border-radius:10px;padding:8px 10px;font-size:14px;color:#1C1C1E;background:#fff;outline:none}
+.field select:focus,.field input:focus{border-color:#621727}
+.grp{font-size:11px;font-weight:700;color:#8E8E93;text-transform:uppercase;letter-spacing:.04em;padding:10px 16px 4px}
+label.item{display:flex;align-items:center;gap:12px;padding:12px 16px;font-size:15px;cursor:pointer;border-bottom:.5px solid #F2F2F7;color:#1C1C1E}
+label.item:last-child{border-bottom:none}
+label.item:active{background:#F2F2F7}
+label.item input{width:23px;height:23px;accent-color:#621727;flex-shrink:0}
+label.item.done span{color:#8E8E93}
+textarea{width:100%;padding:12px 14px;border:1.5px solid #E5E5EA;border-radius:10px;font-size:15px;color:#1C1C1E;background:#fff;outline:none;resize:none;min-height:70px;font-family:inherit}
+textarea:focus{border-color:#621727}
+.btn-main{width:100%;padding:17px;background:#621727;color:#fff;border:none;border-radius:14px;font-size:17px;font-weight:700;cursor:pointer;margin-top:4px}
+.btn-main:active{opacity:.85}
+.btn-edit{width:100%;padding:12px;background:#fff;color:#621727;border:1.5px dashed #621727;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;margin-top:10px}
+.result{display:none;background:#fff;border-radius:16px;padding:16px;margin-top:12px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.result-title{font-size:14px;font-weight:700;color:#1C1C1E;margin-bottom:10px}
+.invoice-box{background:#F8F8F8;border:1px solid #E5E5EA;border-radius:12px;padding:14px;margin-bottom:12px;white-space:pre-wrap;font-size:13px;font-family:'Courier New',monospace;color:#1C1C1E;line-height:1.7;max-height:420px;overflow-y:auto}
+.btn-copy{width:100%;padding:14px;background:#166534;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer}
+.btn-copy.done{background:#0F766E}
+.btn-new{width:100%;padding:12px;background:#fff;color:#621727;border:2px solid #621727;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px}
+/* редактирование списка */
+.ebar{display:none;background:#FFF3CD;color:#621727;padding:10px 16px;font-size:13px;font-weight:600;text-align:center;border-radius:12px;margin-bottom:12px}
+body.edit .ebar{display:block}
+.esec{background:#fff;border-radius:16px;margin-bottom:12px;padding:12px 16px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.esec .ehead{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+.esec input.stitle{font-weight:700;font-size:15px;color:#621727;border:1.5px solid #E5E5EA;border-radius:10px;padding:8px 10px;flex:1;font-family:inherit}
+.esec input.gtitle{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#8E8E93;border:1.5px dashed #E5E5EA;border-radius:10px;padding:6px 10px;width:100%;margin:8px 0 4px;font-family:inherit}
+.erow{display:flex;gap:8px;align-items:center;margin-top:6px}
+.erow input{font-size:14px;padding:8px 10px;border:1.5px solid #E5E5EA;border-radius:10px;flex:1;font-family:inherit;color:#1C1C1E}
+.x{background:#FEE2E2;border:none;color:#991B1B;font-size:15px;cursor:pointer;width:26px;height:26px;border-radius:50%;flex-shrink:0;line-height:1}
+.addbtn{background:none;border:none;color:#621727;font-size:13px;font-weight:600;cursor:pointer;padding:8px 0 0;text-align:left}
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>🧾 Чек-лист расходников</h1>
+<p>OLEAND · Отметь наличие и отправь хозяйке на согласование</p>
+</div>
+
+<div class="content">
+
+<div class="ebar">✏️ Режим редактирования: меняй названия, удаляй ✕, добавляй пункты, затем «Сохранить список»</div>
+
+<div id="formTop">
+<div class="card">
+<div class="card-title">🏠 Объект</div>
+<div class="field">
+<div class="field-label">Выбери объект</div>
+<select id="obj">
+<option value="">— выбрать —</option>
+<option>Петроградка б+м</option>
+<option>Саперный б+м</option>
+<option>Царская столица</option>
+<option>BLUE Железнодор.</option>
+<option>GREEN Тосина</option>
+<option>NUDE Манчестерская</option>
+<option>TIFFANY Ветеранов</option>
+<option>GRAY Лиговский проспект</option>
+</select>
+</div>
+</div>
+
+<div class="card">
+<div class="card-title">👤 Кто проверил</div>
+<div class="field">
+<div class="field-label">Дата проверки</div>
+<input type="date" id="dt">
+</div>
+<div class="field">
+<div class="field-label">Проверила</div>
+<select id="staff">
+<option value="">— выбрать —</option>
+<option>Валерия</option>
+<option>Мария</option>
+<option>Анна</option>
+<option>Гуля</option>
+<option>Ольга</option>
+</select>
+</div>
+</div>
+</div>
+
+<div id="sections"></div>
+
+<div class="card" id="noteCard">
+<div class="card-title">💬 Замечания</div>
+<div style="padding:12px 16px">
+<textarea id="note" placeholder="Что заканчивается, что сломалось, особые пожелания..."></textarea>
+</div>
+</div>
+
+<div id="viewBtns">
+<button class="btn-main" onclick="generate()">📄 Сформировать на согласование</button>
+<button class="btn-edit" onclick="startEdit()">✏️ Редактировать список</button>
+</div>
+<div id="editBtns" style="display:none">
+<button class="btn-main" onclick="saveEdit()">💾 Сохранить список</button>
+<button class="btn-new" onclick="cancelEdit()">Отмена</button>
+<button class="btn-new" onclick="restoreDefault()">Вернуть стандартный список</button>
+</div>
+
+<div class="result" id="result">
+<div class="result-title">✅ Готово — скопируй и отправь хозяйке в Telegram</div>
+<div class="invoice-box" id="invoice"></div>
+<button class="btn-copy" id="copyBtn" onclick="copyInvoice()">📋 Скопировать чек-лист</button>
+<button class="btn-new" onclick="newForm()">✏️ Заполнить новый</button>
+</div>
+
+</div>
+
+<script>
+var DEFAULT_LIST = [
+{t:"🛁 Ванная комната", g:[
+ {t:"Гигиена", items:["Туалетная бумага (2–4 рулона)","Жидкое мыло","Шампунь","Кондиционер для волос","Гель для душа","Освежитель воздуха","Ватные палочки","Ватные диски"]},
+ {t:"Стирка", items:["Порошок для стирки","Кондиционер для белья"]}
+]},
+{t:"🍳 Кухня", g:[
+ {t:"Базовые продукты", items:["Соль","Сахар","Чёрный перец","Растительное масло","Чай","Салфетки бумажные"]},
+ {t:"Комплимент гостю", items:["Конфеты"]}
+]},
+{t:"🍽 Мытьё посуды", g:[
+ {t:"", items:["Средство для мытья посуды","Губка","Таблетки для посудомойки","Тряпка для кухни"]}
+]},
+{t:"🧹 Уборка", g:[
+ {t:"", items:["Средство для стёкол Grass","Средство для пола Grass","Средство для унитаза","Средство для сантехники","Средство для акриловой ванны","Cif Professional для поверхностей","Перчатки для уборки","Тряпки микрофибра"]}
+]},
+{t:"🛋 Комфорт гостей", g:[
+ {t:"", items:["Ролик для одежды","Фумигатор + пластины","Батарейки","Губки для обуви"]}
+]},
+{t:"🩴 Одноразовое", g:[
+ {t:"", items:["Зубные наборы","Тапочки"]}
+]},
+{t:"⚙️ Для техники", g:[
+ {t:"", items:["Кофе для кофемашины (если есть): капсулы / молотый / растворимый"]}
+]},
+{t:"👶 Если едут с детьми", g:[
+ {t:"", items:["Детская посуда","Детский стульчик","Накладка на унитаз","Детское мыло"]}
+]},
+{t:"🐾 Если с животными", g:[
+ {t:"", items:["Пелёнки","Пакеты для уборки","Миски"]}
+]}
+];
+
+var LIST;
+try { LIST = JSON.parse(localStorage.getItem('oleand_items_v3') || 'null'); } catch(e) { LIST = null; }
+if (!LIST) LIST = JSON.parse(JSON.stringify(DEFAULT_LIST));
+
+var box = document.getElementById('sections');
+document.getElementById('dt').value = new Date().toISOString().slice(0,10);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+
+/* ---------- обычный режим ---------- */
+function render(){
+  box.innerHTML = '';
+  LIST.forEach(function(sec, si){
+    var d = document.createElement('div');
+    d.className = 'card';
+    var html = '<div class="card-title">' + esc(sec.t) + '<span class="cnt" id="c' + si + '"></span></div>';
+    sec.g.forEach(function(grp){
+      if (grp.t) html += '<div class="grp">' + esc(grp.t) + '</div>';
+      grp.items.forEach(function(name){
+        html += '<label class="item" data-sec="' + si + '"><input type="checkbox"><span>' + esc(name) + '</span></label>';
+      });
+    });
+    d.innerHTML = html;
+    box.appendChild(d);
+  });
+  document.querySelectorAll('label.item input').forEach(function(cb){
+    cb.addEventListener('change', function(){
+      cb.closest('label').classList.toggle('done', cb.checked);
+      update();
+    });
+  });
+  update();
+}
+
+function update(){
+  LIST.forEach(function(sec, si){
+    var a = document.querySelectorAll('label.item[data-sec="' + si + '"] input');
+    var ok = document.querySelectorAll('label.item[data-sec="' + si + '"] input:checked').length;
+    var c = document.getElementById('c' + si);
+    if (c) c.textContent = a.length && ok === a.length ? '✓ всё есть' : ok + ' из ' + a.length;
+  });
+}
+
+function generate(){
+  var obj = document.getElementById('obj').value;
+  var staff = document.getElementById('staff').value;
+  var note = document.getElementById('note').value.trim();
+  if (!obj) { alert('Выбери объект!'); return; }
+  if (!staff) { alert('Укажи, кто проверил!'); return; }
+
+  var d = document.getElementById('dt').value.split('-').reverse().join('.');
+  var have = 0, total = 0, buy = [];
+  document.querySelectorAll('label.item').forEach(function(l){
+    total++;
+    if (l.querySelector('input').checked) have++;
+    else buy.push(' • ' + l.querySelector('span').textContent);
+  });
+
+  var t = '';
+  t += '🧾 ЧЕК-ЛИСТ РАСХОДНИКОВ\n';
+  t += '━━━━━━━━━━━━━━━━━━━━\n';
+  t += '🏠 Объект: ' + obj + '\n';
+  t += '📅 Дата проверки: ' + d + '\n';
+  t += '👤 Проверила: ' + staff + '\n';
+  t += '━━━━━━━━━━━━━━━━━━━━\n';
+  t += '✅ В наличии: ' + have + ' из ' + total + '\n';
+  t += '━━━━━━━━━━━━━━━━━━━━\n';
+  if (buy.length) {
+    t += '🛒 НУЖНО ДОКУПИТЬ (' + buy.length + '):\n';
+    t += buy.join('\n') + '\n';
+  } else {
+    t += '🎉 Всё в наличии, докупать ничего не нужно\n';
+  }
+  t += '━━━━━━━━━━━━━━━━━━━━\n';
+  if (note) t += '💬 ' + note + '\n━━━━━━━━━━━━━━━━━━━━\n';
+  t += '📨 Прошу согласовать закупку\n';
+  t += 'OLEAND Apartments';
+
+  document.getElementById('invoice').textContent = t;
+  document.getElementById('result')._text = t;
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth'});
+}
+
+function copyInvoice(){
+  var text = document.getElementById('result')._text;
+  var btn = document.getElementById('copyBtn');
+  var done = function(){
+    btn.textContent = '✅ Скопировано! Вставляй в Telegram';
+    btn.classList.add('done');
+    setTimeout(function(){ btn.textContent = '📋 Скопировать чек-лист'; btn.classList.remove('done'); }, 3000);
+  };
+  if (navigator.clipboard) navigator.clipboard.writeText(text).then(done).catch(function(){ fallbackCopy(text, done); });
+  else fallbackCopy(text, done);
+}
+function fallbackCopy(text, cb){
+  var ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta); cb();
+}
+
+function newForm(){
+  document.querySelectorAll('label.item input').forEach(function(cb){ cb.checked = false; cb.closest('label').classList.remove('done'); });
+  document.getElementById('note').value = '';
+  document.getElementById('obj').value = '';
+  document.getElementById('staff').value = '';
+  document.getElementById('dt').value = new Date().toISOString().slice(0,10);
+  document.getElementById('result').style.display = 'none';
+  update();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ---------- режим редактирования ---------- */
+function startEdit(){
+  document.body.classList.add('edit');
+  document.getElementById('viewBtns').style.display = 'none';
+  document.getElementById('editBtns').style.display = 'block';
+  document.getElementById('formTop').style.display = 'none';
+  document.getElementById('noteCard').style.display = 'none';
+  document.getElementById('result').style.display = 'none';
+  box.innerHTML = '';
+  LIST.forEach(function(sec){ box.appendChild(buildEsec(sec)); });
+  var add = document.createElement('div');
+  add.className = 'esec';
+  add.innerHTML = '<button class="addbtn" onclick="addSection()">＋ добавить раздел</button>';
+  add.id = 'addSecRow';
+  box.appendChild(add);
+}
+
+function buildEsec(sec){
+  var d = document.createElement('div');
+  d.className = 'esec';
+  var h = '<div class="ehead"><input class="stitle" value="' + esc(sec.t) + '" placeholder="Название раздела"><button class="x" title="Удалить раздел" onclick="delSec(this)">✕</button></div>';
+  sec.g.forEach(function(grp){
+    h += '<div class="egrp"><input class="gtitle" value="' + esc(grp.t) + '" placeholder="Подзаголовок (можно пусто)">';
+    grp.items.forEach(function(name){
+      h += '<div class="erow"><input value="' + esc(name) + '"><button class="x" onclick="delRow(this)">✕</button></div>';
+    });
+    h += '<button class="addbtn" onclick="addRow(this)">＋ пункт</button></div>';
+  });
+  d.innerHTML = h;
+  return d;
+}
+
+function delRow(b){ b.parentElement.remove(); }
+function delSec(b){ if (confirm('Удалить весь раздел?')) b.closest('.esec').remove(); }
+function addRow(b){
+  var r = document.createElement('div');
+  r.className = 'erow';
+  r.innerHTML = '<input value="" placeholder="Новый пункт"><button class="x" onclick="delRow(this)">✕</button>';
+  b.parentElement.insertBefore(r, b);
+  r.querySelector('input').focus();
+}
+function addSection(){
+  var el = buildEsec({ t: '📦 Новый раздел', g: [{ t: '', items: [] }] });
+  box.insertBefore(el, document.getElementById('addSecRow'));
+  el.querySelector('.stitle').focus();
+}
+
+function saveEdit(){
+  var newList = [];
+  document.querySelectorAll('.esec').forEach(function(s){
+    var st = s.querySelector('.stitle');
+    if (!st) return;
+    var sec = { t: st.value.trim() || 'Раздел', g: [] };
+    s.querySelectorAll('.egrp').forEach(function(g){
+      var grp = { t: g.querySelector('.gtitle').value.trim(), items: [] };
+      g.querySelectorAll('.erow input').forEach(function(inp){
+        var v = inp.value.trim();
+        if (v) grp.items.push(v);
+      });
+      if (grp.items.length) sec.g.push(grp);
+    });
+    if (sec.g.length) newList.push(sec);
+  });
+  if (!newList.length) { alert('Список пуст — добавь хотя бы один пункт.'); return; }
+  LIST = newList;
+  localStorage.setItem('oleand_items_v3', JSON.stringify(LIST));
+  endEdit();
+}
+function cancelEdit(){ endEdit(); }
+function restoreDefault(){
+  if (!confirm('Вернуть стандартный список? Твои изменения будут удалены.')) return;
+  LIST = JSON.parse(JSON.stringify(DEFAULT_LIST));
+  localStorage.removeItem('oleand_items_v3');
+  endEdit();
+}
+function endEdit(){
+  document.body.classList.remove('edit');
+  document.getElementById('viewBtns').style.display = 'block';
+  document.getElementById('editBtns').style.display = 'none';
+  document.getElementById('formTop').style.display = 'block';
+  document.getElementById('noteCard').style.display = 'block';
+  render();
+}
+
+render();
+</script>
+<div style="text-align:center;padding:18px 0 26px;font-size:11px;letter-spacing:1.5px;color:#621727;opacity:.55">© by G·N · 2026</div>
+</body>
+</html>
