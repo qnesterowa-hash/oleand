@@ -743,10 +743,10 @@ function kbDraftEdit(id) {
   var kb = [];
   for (var i = 0; i < rows.length; i++) {
     var sfx = rows[i].id.split('_')[1];
+    kb.push([{ text: rows[i].name + ' — ' + rows[i].qty + ' шт', callback_data: 'dzz|0' }]);
     kb.push([
-      { text: '➖', callback_data: 'dmn|' + id + '|' + sfx },
-      { text: rows[i].name + ': ' + rows[i].qty, callback_data: 'dzz|0' },
-      { text: '➕', callback_data: 'dpl|' + id + '|' + sfx }
+      { text: '➖ убавить', callback_data: 'dmn|' + id + '|' + sfx },
+      { text: '➕ добавить', callback_data: 'dpl|' + id + '|' + sfx }
     ]);
   }
   kb.push([{ text: '✅ Готово', callback_data: 'dbk|' + id }]);
@@ -755,7 +755,7 @@ function kbDraftEdit(id) {
 
 function editText(id) {
   var rows = draftRows(id);
-  var t = '✏️ <b>Изменить количество</b>\nНажимайте ➖ или ➕ рядом с позицией. Когда всё верно — «✅ Готово».';
+  var t = '✏️ <b>Изменить количество</b>\nПод каждой позицией — кнопки ➖ и ➕. Когда всё верно — «✅ Готово».';
   if (!rows.length) return t;
   var total = 0;
   for (var i = 0; i < rows.length; i++) total += rows[i].qty;
