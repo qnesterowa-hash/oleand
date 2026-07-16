@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>OLEAND — Помощник</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#F2F2F7;min-height:100vh;padding-bottom:86px}
+.header{background:#621727;padding:18px 16px 14px;text-align:center;color:#fff;position:sticky;top:0;z-index:20}
+.header h1{font-size:19px;font-weight:700}
+.header p{font-size:12px;opacity:.8;margin-top:3px}
+.test-banner{background:#FEF3C7;color:#92400E;font-size:12px;font-weight:600;text-align:center;padding:7px 12px}
+.content{padding:14px;display:none}
+.content.active{display:block}
+.card{background:#fff;border-radius:16px;margin-bottom:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.card-title{background:#621727;color:#fff;padding:11px 16px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;display:flex;align-items:center;justify-content:space-between}
+.card-title .badge{background:rgba(255,255,255,.22);border-radius:20px;padding:2px 10px;font-size:12px;font-weight:700;text-transform:none}
+.row{padding:12px 16px;border-bottom:.5px solid #F2F2F7;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.row:last-child{border-bottom:none}
+.row-main{flex:1;min-width:0}
+.row-title{font-size:14.5px;color:#1C1C1E;font-weight:600}
+.row-sub{font-size:12px;color:#8E8E93;margin-top:2px}
+.chip{font-size:11.5px;font-weight:700;border-radius:20px;padding:4px 10px;white-space:nowrap;flex-shrink:0}
+.chip.red{background:#FEE2E2;color:#991B1B}
+.chip.green{background:#DCFCE7;color:#166534}
+.chip.amber{background:#FEF3C7;color:#92400E}
+.chip.gray{background:#F2F2F7;color:#6B7280}
+.chip.wine{background:#F5E6EA;color:#621727}
+.chip.blue{background:#DBEAFE;color:#1E40AF}
+.status-btns{display:flex;gap:6px;flex-shrink:0}
+.st-btn{border:1.5px solid #E5E5EA;background:#fff;border-radius:10px;padding:7px 10px;font-size:12.5px;font-weight:600;color:#621727;cursor:pointer}
+.st-btn:active{background:#F2F2F7}
+.st-btn.on{background:#621727;color:#fff;border-color:#621727}
+.qty-wrap{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.qty-btn{width:34px;height:34px;border-radius:50%;border:1.5px solid #E5E5EA;background:#fff;font-size:19px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#621727;font-weight:500;line-height:1}
+.qty-btn:active{background:#F2F2F7}
+.qty-num{font-size:17px;font-weight:700;color:#1C1C1E;min-width:28px;text-align:center}
+.btn-main{width:100%;padding:15px;background:#621727;color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;margin-top:4px}
+.btn-main:active{opacity:.85}
+.btn-line{width:100%;padding:12px;background:#fff;color:#621727;border:2px solid #621727;border-radius:12px;font-size:14.5px;font-weight:600;cursor:pointer;margin-top:8px}
+.btn-green{width:100%;padding:14px;background:#166534;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px}
+.note{padding:8px 16px;font-size:12px;color:#8E8E93;font-style:italic}
+.feed-item{padding:11px 16px;border-bottom:.5px solid #F2F2F7;display:flex;gap:10px;align-items:flex-start}
+.feed-item:last-child{border-bottom:none}
+.feed-time{font-size:11px;font-weight:700;color:#621727;flex-shrink:0;margin-top:2px;min-width:40px}
+.feed-text{font-size:13.5px;color:#1C1C1E;line-height:1.45}
+.feed-text small{color:#8E8E93}
+/* график */
+.week-scroll{overflow-x:auto;padding:4px 0 8px}
+table.week{border-collapse:collapse;width:100%;min-width:560px}
+table.week th{background:#F8F8F8;font-size:10.5px;color:#8E8E93;font-weight:700;text-transform:uppercase;padding:8px 4px;border-bottom:1px solid #E5E5EA;text-align:center}
+table.week th.today{background:#F5E6EA;color:#621727}
+table.week td{border-bottom:.5px solid #F2F2F7;border-right:.5px solid #F2F2F7;padding:6px 4px;font-size:11px;text-align:center;vertical-align:middle;min-width:64px;height:44px}
+table.week td.objcol{font-size:11px;font-weight:700;color:#1C1C1E;text-align:left;padding-left:12px;min-width:110px;background:#fff;position:sticky;left:0}
+table.week td .m{display:inline-block;border-radius:8px;padding:3px 7px;font-weight:700;font-size:10.5px;cursor:pointer}
+.m.m1{background:#F5E6EA;color:#621727}.m.m2{background:#DBEAFE;color:#1E40AF}.m.m3{background:#DCFCE7;color:#166534}.m.m4{background:#FEF3C7;color:#92400E}.m.m5{background:#EDE9FE;color:#5B21B6}
+.legend{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px}
+/* расходы */
+.exp-sum{display:flex;justify-content:space-between;padding:13px 16px;background:#F8F8F8}
+.exp-sum b{color:#621727;font-size:17px}
+.exp-sum span{font-size:13px;color:#8E8E93;align-self:center}
+input[type=text],input[type=number],input[type=date],select{border:1.5px solid #E5E5EA;border-radius:10px;padding:9px 10px;font-size:14px;color:#1C1C1E;background:#fff;outline:none;width:100%}
+input:focus,select:focus{border-color:#621727}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 16px}
+.form-grid .full{grid-column:1/3}
+.flabel{font-size:11px;color:#8E8E93;margin-bottom:3px}
+.photo-btn{display:flex;align-items:center;justify-content:center;gap:8px;border:1.5px dashed #621727;background:#F5E6EA;color:#621727;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;width:100%}
+.photo-prev{max-width:100%;border-radius:12px;margin-top:8px;display:none}
+/* нижнее меню */
+.tabbar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:.5px solid #E5E5EA;display:flex;z-index:30;padding-bottom:env(safe-area-inset-bottom)}
+.tab{flex:1;text-align:center;padding:9px 2px 8px;cursor:pointer;color:#8E8E93}
+.tab .ic{font-size:21px;line-height:1.2}
+.tab .lb{font-size:9.5px;font-weight:600;margin-top:1px}
+.tab.on{color:#621727}
+.footer{text-align:center;font-size:11px;color:#C7C7CC;padding:16px 0 4px}
+.empty{padding:20px 16px;text-align:center;font-size:13px;color:#8E8E93}
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1 id="hTitle">📅 Сегодня</h1>
+<p>OLEAND · Помощник хозяйки</p>
+</div>
+<div class="test-banner">🧪 ТЕСТОВЫЙ ВАРИАНТ — данные для примера, ничего никуда не отправляется</div>
+
+<!-- ================= СЕГОДНЯ ================= -->
+<div class="content active" id="tab-today">
+
+<div class="card">
+<div class="card-title">🏠 Заезды и выезды <span class="badge" id="dateNow"></span></div>
+<div class="row"><div class="row-main"><div class="row-title">Царская столица</div><div class="row-sub">выезд до 12:00 · заезд в 15:00 — убрать к заселению!</div></div><span class="chip red">🔴 выезд + 🟢 заезд</span></div>
+<div class="row"><div class="row-main"><div class="row-title">NUDE Манчестерская</div><div class="row-sub">выезд до 12:00</div></div><span class="chip red">🔴 выезд</span></div>
+<div class="row"><div class="row-main"><div class="row-title">GRAY Лиговский проспект</div><div class="row-sub">заезд в 14:00 · квартира готова ✅</div></div><span class="chip green">🟢 заезд</span></div>
+</div>
+
+<div class="card">
+<div class="card-title">🧹 Уборки сегодня <span class="badge">2</span></div>
+<div class="row"><div class="row-main"><div class="row-title">Царская столица</div><div class="row-sub">Валерия · срочно — заезд в 15:00</div></div><span class="chip amber">в работе</span></div>
+<div class="row"><div class="row-main"><div class="row-title">NUDE Манчестерская</div><div class="row-sub">Ольга</div></div><span class="chip gray">ожидает</span></div>
+</div>
+
+<div class="card">
+<div class="card-title">🧺 Бельё к забору <span class="badge">12 шт</span></div>
+<div class="row"><div class="row-main"><div class="row-title">Петроградка б+м</div><div class="row-sub">подготовлено вчера, 12 шт</div></div><span class="chip wine">ждёт прачку</span></div>
+<div class="note">Черновик по Царской столице появится после подтверждения уборки</div>
+</div>
+
+<div class="card">
+<div class="card-title">🔔 Напоминания</div>
+<div class="feed-item"><div class="feed-time">9:00</div><div class="feed-text">План на день разослан ✅</div></div>
+<div class="feed-item"><div class="feed-time">10:00</div><div class="feed-text">Черновики накладных: Царская столица, NUDE Манчестерская</div></div>
+<div class="feed-item"><div class="feed-time">13:00</div><div class="feed-text">Завтра выезжают: GREEN Тосина <small>· текст гостю готов 👇</small></div></div>
+<div class="feed-item"><div class="feed-time">1 авг</div><div class="feed-text">Сверка с прачкой за июль <small>· придёт автоматически</small></div></div>
+</div>
+
+</div>
+
+<!-- ================= УБОРКИ ================= -->
+<div class="content" id="tab-clean">
+
+<div class="card">
+<div class="card-title">🧹 Уборки на сегодня</div>
+<div class="row">
+<div class="row-main"><div class="row-title">Царская столица</div><div class="row-sub">Валерия · заезд в 15:00 🔥</div></div>
+<div class="status-btns" data-key="c1"><button class="st-btn" onclick="setSt('c1',0,this)">взяла</button><button class="st-btn on" onclick="setSt('c1',1,this)">убираю</button><button class="st-btn" onclick="setSt('c1',2,this)">готово ✅</button></div>
+</div>
+<div class="row">
+<div class="row-main"><div class="row-title">NUDE Манчестерская</div><div class="row-sub">Ольга</div></div>
+<div class="status-btns" data-key="c2"><button class="st-btn" onclick="setSt('c2',0,this)">взяла</button><button class="st-btn" onclick="setSt('c2',1,this)">убираю</button><button class="st-btn" onclick="setSt('c2',2,this)">готово ✅</button></div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-title">📌 Что проверить при уборке</div>
+<div class="note">Чек-лист расходников — отметить наличие и отправить хозяйке</div>
+<div style="padding:0 16px 14px"><button class="btn-line" onclick="alert('В рабочей версии откроется чек-лист расходников')">🧾 Открыть чек-лист расходников</button></div>
+</div>
+
+<div class="card">
+<div class="card-title">✅ Сделано за неделю</div>
+<div class="row"><div class="row-main"><div class="row-title">GRAY Лиговский проспект</div><div class="row-sub">вчера · Мария</div></div><span class="chip green">готово</span></div>
+<div class="row"><div class="row-main"><div class="row-title">Петроградка б+м</div><div class="row-sub">вчера · Анна</div></div><span class="chip green">готово</span></div>
+<div class="row"><div class="row-main"><div class="row-title">Саперный б+м</div><div class="row-sub">14.07 · Валерия</div></div><span class="chip green">готово</span></div>
+</div>
+
+</div>
+
+<!-- ================= БЕЛЬЁ ================= -->
+<div class="content" id="tab-laundry">
+
+<div class="card">
+<div class="card-title">📋 Черновик — выезд сегодня</div>
+<div class="note">Царская столица · максимальный комплект по норме. Убавь, если гостей было меньше</div>
+<div class="row"><div class="row-main"><div class="row-title" style="font-weight:400">Пододеяльник 2,0</div></div><div class="qty-wrap"><button class="qty-btn" onclick="q('l1',-1)">−</button><span class="qty-num" id="l1">1</span><button class="qty-btn" onclick="q('l1',1)">+</button></div></div>
+<div class="row"><div class="row-main"><div class="row-title" style="font-weight:400">Пододеяльник 1,5</div></div><div class="qty-wrap"><button class="qty-btn" onclick="q('l2',-1)">−</button><span class="qty-num" id="l2">3</span><button class="qty-btn" onclick="q('l2',1)">+</button></div></div>
+<div class="row"><div class="row-main"><div class="row-title" style="font-weight:400">Простыня 2,0</div></div><div class="qty-wrap"><button class="qty-btn" onclick="q('l3',-1)">−</button><span class="qty-num" id="l3">1</span><button class="qty-btn" onclick="q('l3',1)">+</button></div></div>
+<div class="row"><div class="row-main"><div class="row-title" style="font-weight:400">Простыня 1,5</div></div><div class="qty-wrap"><button class="qty-btn" onclick="q('l4',-1)">−</button><span class="qty-num" id="l4">3</span><button class="qty-btn" onclick="q('l4',1)">+</button></div></div>
+<div class="row"><div class="row-main"><div class="row-title" style="font-weight:400">Наволочка 2,0</div></div><div class="qty-wrap"><button class="qty-btn" onclick="q('l5',-1)">−</button><span class="qty-num" id="l5">6</span><button class="qty-btn" onclick="q('l5',1)">+</button></div></div>
+<div class="row"><div class="row-main"><div class="row-title" style="font-weight:400">Полотенце большое</div></div><div class="qty-wrap"><button class="qty-btn" onclick="q('l6',-1)">−</button><span class="qty-num" id="l6">6</span><button class="qty-btn" onclick="q('l6',1)">+</button></div></div>
+<div class="row"><div class="row-main"><div class="row-title" style="font-weight:400">Полотенце среднее</div></div><div class="qty-wrap"><button class="qty-btn" onclick="q('l7',-1)">−</button><span class="qty-num" id="l7">6</span><button class="qty-btn" onclick="q('l7',1)">+</button></div></div>
+<div class="row"><div class="row-main"><div class="row-title" style="font-weight:400">Полотенце для ног</div></div><div class="qty-wrap"><button class="qty-btn" onclick="q('l8',-1)">−</button><span class="qty-num" id="l8">2</span><button class="qty-btn" onclick="q('l8',1)">+</button></div></div>
+<div class="row"><div class="row-main"><div class="row-title">Итого</div></div><span class="chip wine" id="lTotal">28 шт</span></div>
+<div style="padding:4px 16px 14px">
+<button class="btn-green" onclick="alert('В рабочей версии: статус → подготовлено, уведомление прачке и хозяйке')">✅ Всё верно — подготовлено</button>
+<button class="btn-line" onclick="alert('В рабочей версии откроется фирменная накладная')">🧾 Открыть фирменную накладную</button>
+</div>
+</div>
+
+<div class="card">
+<div class="card-title">🚚 Ждёт забора прачкой <span class="badge">12 шт</span></div>
+<div class="row"><div class="row-main"><div class="row-title">Петроградка б+м</div><div class="row-sub">Пододеяльник 2,0 — 1 · Простыня 2,0 — 1 · Наволочка 2,0 — 3 · Полотенца — 7</div></div><span class="chip wine">подготовлено</span></div>
+<div style="padding:4px 16px 14px"><button class="btn-main" onclick="alert('В рабочей версии: всё подготовленное → в прачке, накладная-факт в чат прачки')">🚚 Прачка забрала бельё</button></div>
+</div>
+
+<div class="card">
+<div class="card-title">🧺 Сейчас в прачке <span class="badge">34 шт</span></div>
+<div class="row"><div class="row-main"><div class="row-title">GRAY Лиговский проспект</div><div class="row-sub">сдано 14.07 · 19 шт</div></div><span class="chip blue">в прачке</span></div>
+<div class="row"><div class="row-main"><div class="row-title">Саперный б+м</div><div class="row-sub">сдано 14.07 · 15 шт</div></div><span class="chip blue">в прачке</span></div>
+<div style="padding:4px 16px 14px"><button class="btn-line" onclick="alert('В рабочей версии: отметить галочками, что вернулось')">📦 Приняли из прачки</button></div>
+</div>
+
+</div>
+
+<!-- ================= ГРАФИК ================= -->
+<div class="content" id="tab-schedule">
+
+<div class="card">
+<div class="card-title">👥 График горничных <span class="badge">14–20 июля</span></div>
+<div class="week-scroll">
+<table class="week">
+<tr><th style="text-align:left;padding-left:12px">Объект</th><th>Пн 14</th><th>Вт 15</th><th class="today">Ср 16</th><th>Чт 17</th><th>Пт 18</th><th>Сб 19</th><th>Вс 20</th></tr>
+<tr><td class="objcol">Петроградка</td><td><span class="m m3" onclick="mtap(this)">Анна</span></td><td></td><td></td><td><span class="m m1" onclick="mtap(this)">Валерия</span></td><td></td><td></td><td><span class="m m3" onclick="mtap(this)">Анна</span></td></tr>
+<tr><td class="objcol">Саперный</td><td><span class="m m1" onclick="mtap(this)">Валерия</span></td><td></td><td></td><td></td><td><span class="m m2" onclick="mtap(this)">Мария</span></td><td></td><td></td></tr>
+<tr><td class="objcol">Царская столица</td><td></td><td></td><td><span class="m m1" onclick="mtap(this)">Валерия</span></td><td></td><td></td><td><span class="m m5" onclick="mtap(this)">Ольга</span></td><td></td></tr>
+<tr><td class="objcol">GREEN Тосина</td><td></td><td><span class="m m2" onclick="mtap(this)">Мария</span></td><td></td><td><span class="m m2" onclick="mtap(this)">Мария</span></td><td></td><td></td><td></td></tr>
+<tr><td class="objcol">NUDE Манчестерская</td><td></td><td></td><td><span class="m m5" onclick="mtap(this)">Ольга</span></td><td></td><td></td><td><span class="m m1" onclick="mtap(this)">Валерия</span></td><td></td></tr>
+<tr><td class="objcol">TIFFANY Ветеранов</td><td></td><td><span class="m m3" onclick="mtap(this)">Анна</span></td><td></td><td></td><td></td><td></td><td><span class="m m2" onclick="mtap(this)">Мария</span></td></tr>
+<tr><td class="objcol">GRAY Лиговский</td><td></td><td><span class="m m2" onclick="mtap(this)">Мария</span></td><td></td><td></td><td><span class="m m5" onclick="mtap(this)">Ольга</span></td><td></td><td></td></tr>
+</table>
+</div>
+<div class="legend">
+<span class="chip wine">Валерия</span><span class="chip blue">Мария</span><span class="chip green">Анна</span><span class="chip amber">Гуля</span><span class="chip" style="background:#EDE9FE;color:#5B21B6">Ольга</span>
+</div>
+<div class="note">Нажми на имя в клетке, чтобы изменить (в рабочей версии). Каждой горничной утром бот пришлёт её день.</div>
+</div>
+
+<div class="card">
+<div class="card-title">📊 Смены за неделю</div>
+<div class="row"><div class="row-main"><div class="row-title">Валерия</div></div><span class="chip wine">4 уборки</span></div>
+<div class="row"><div class="row-main"><div class="row-title">Мария</div></div><span class="chip blue">5 уборок</span></div>
+<div class="row"><div class="row-main"><div class="row-title">Анна</div></div><span class="chip green">3 уборки</span></div>
+<div class="row"><div class="row-main"><div class="row-title">Ольга</div></div><span class="chip" style="background:#EDE9FE;color:#5B21B6">3 уборки</span></div>
+</div>
+
+</div>
+
+<!-- ================= РАСХОДЫ ================= -->
+<div class="content" id="tab-expenses">
+
+<div class="card">
+<div class="card-title">💰 Июль 2026</div>
+<div class="exp-sum"><span>Всего расходов</span><b id="expTotal">8 470 ₽</b></div>
+</div>
+
+<div class="card">
+<div class="card-title">➕ Добавить расход</div>
+<div class="form-grid">
+<div class="full"><div class="flabel">Объект</div><select id="eObj"><option>Петроградка б+м</option><option>Саперный б+м</option><option>Царская столица</option><option>BLUE Железнодор.</option><option>GREEN Тосина</option><option>NUDE Манчестерская</option><option>TIFFANY Ветеранов</option><option>GRAY Лиговский проспект</option><option>Общее</option></select></div>
+<div><div class="flabel">Сумма, ₽</div><input type="number" id="eSum" placeholder="0"></div>
+<div><div class="flabel">Кто купил</div><select id="eWho"><option>Гуля</option><option>Валерия</option><option>Мария</option><option>Анна</option><option>Ольга</option></select></div>
+<div class="full"><div class="flabel">Что купили</div><input type="text" id="eWhat" placeholder="напр. химия для уборки, лампочки…"></div>
+<div class="full">
+<label class="photo-btn">📸 Прикрепить фото чека<input type="file" accept="image/*" style="display:none" onchange="prevPhoto(this)"></label>
+<img class="photo-prev" id="ePrev">
+</div>
+<div class="full"><button class="btn-main" onclick="addExp()">Сохранить расход</button></div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-title">🧾 Последние расходы</div>
+<div id="expList">
+<div class="row"><div class="row-main"><div class="row-title">Химия Grass + губки</div><div class="row-sub">15.07 · Царская столица · Валерия · чек 📎</div></div><span class="chip wine">2 340 ₽</span></div>
+<div class="row"><div class="row-main"><div class="row-title">Туалетная бумага, мыло (опт)</div><div class="row-sub">12.07 · Общее · Гуля · чек 📎</div></div><span class="chip wine">3 180 ₽</span></div>
+<div class="row"><div class="row-main"><div class="row-title">Лампочки, батарейки</div><div class="row-sub">08.07 · GRAY Лиговский · Мария · чек 📎</div></div><span class="chip wine">950 ₽</span></div>
+<div class="row"><div class="row-main"><div class="row-title">Капсулы для кофемашины</div><div class="row-sub">05.07 · Саперный б+м · Гуля · чек 📎</div></div><span class="chip wine">2 000 ₽</span></div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-title">📊 По объектам за месяц</div>
+<div class="row"><div class="row-main"><div class="row-title">Общее (на все объекты)</div></div><span class="chip gray">3 180 ₽</span></div>
+<div class="row"><div class="row-main"><div class="row-title">Царская столица</div></div><span class="chip gray">2 340 ₽</span></div>
+<div class="row"><div class="row-main"><div class="row-title">Саперный б+м</div></div><span class="chip gray">2 000 ₽</span></div>
+<div class="row"><div class="row-main"><div class="row-title">GRAY Лиговский проспект</div></div><span class="chip gray">950 ₽</span></div>
+</div>
+
+</div>
+
+<div class="footer">© by G·N · 2026</div>
+
+<!-- ================= НИЖНЕЕ МЕНЮ ================= -->
+<div class="tabbar">
+<div class="tab on" onclick="go('today',this)"><div class="ic">📅</div><div class="lb">Сегодня</div></div>
+<div class="tab" onclick="go('clean',this)"><div class="ic">🧹</div><div class="lb">Уборки</div></div>
+<div class="tab" onclick="go('laundry',this)"><div class="ic">🧺</div><div class="lb">Бельё</div></div>
+<div class="tab" onclick="go('schedule',this)"><div class="ic">👥</div><div class="lb">График</div></div>
+<div class="tab" onclick="go('expenses',this)"><div class="ic">💰</div><div class="lb">Расходы</div></div>
+</div>
+
+<script>
+if (window.Telegram && Telegram.WebApp) { Telegram.WebApp.ready(); Telegram.WebApp.expand(); }
+
+var titles = { today:'📅 Сегодня', clean:'🧹 Уборки', laundry:'🧺 Бельё', schedule:'👥 График', expenses:'💰 Расходы' };
+function go(name, el) {
+  document.querySelectorAll('.content').forEach(function(c){ c.classList.remove('active'); });
+  document.getElementById('tab-' + name).classList.add('active');
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('on'); });
+  el.classList.add('on');
+  document.getElementById('hTitle').textContent = titles[name];
+  window.scrollTo(0, 0);
+}
+
+var d = new Date();
+document.getElementById('dateNow').textContent = d.toLocaleDateString('ru-RU', { day:'numeric', month:'long' });
+
+function setSt(key, idx, btn) {
+  var wrap = btn.parentElement;
+  wrap.querySelectorAll('.st-btn').forEach(function(b){ b.classList.remove('on'); });
+  btn.classList.add('on');
+  if (idx === 2) alert('В рабочей версии: хозяйке придёт «уборка готова», бот создаст черновик накладной');
+}
+
+function q(id, delta) {
+  var el = document.getElementById(id);
+  var v = Math.max(0, Math.min(30, parseInt(el.textContent) + delta));
+  el.textContent = v;
+  var t = 0;
+  for (var i = 1; i <= 8; i++) t += parseInt(document.getElementById('l' + i).textContent);
+  document.getElementById('lTotal').textContent = t + ' шт';
+}
+
+function prevPhoto(inp) {
+  if (!inp.files || !inp.files[0]) return;
+  var r = new FileReader();
+  r.onload = function(e) { var p = document.getElementById('ePrev'); p.src = e.target.result; p.style.display = 'block'; };
+  r.readAsDataURL(inp.files[0]);
+}
+
+function addExp() {
+  var sum = document.getElementById('eSum').value;
+  var what = document.getElementById('eWhat').value;
+  if (!sum || !what) { alert('Заполни сумму и что купили 🙂'); return; }
+  var obj = document.getElementById('eObj').value;
+  var who = document.getElementById('eWho').value;
+  var hasPhoto = document.getElementById('ePrev').style.display === 'block';
+  var row = document.createElement('div');
+  row.className = 'row';
+  var dd = new Date().toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit' });
+  row.innerHTML = '<div class="row-main"><div class="row-title">' + what + '</div><div class="row-sub">' + dd + ' · ' + obj + ' · ' + who + (hasPhoto ? ' · чек 📎' : '') + '</div></div><span class="chip wine">' + Number(sum).toLocaleString('ru-RU') + ' ₽</span>';
+  var list = document.getElementById('expList');
+  list.insertBefore(row, list.firstChild);
+  document.getElementById('eSum').value = ''; document.getElementById('eWhat').value = '';
+  document.getElementById('ePrev').style.display = 'none';
+  alert('Сохранено (в тесте — только на этой странице).\nВ рабочей версии: запись в таблицу + фото чека на Google Диск + уведомление хозяйке.');
+}
+</script>
+
+</body>
+</html>
