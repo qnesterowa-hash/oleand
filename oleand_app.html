@@ -11,7 +11,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#F2F2F7;
 .header{background:#621727;padding:18px 16px 14px;text-align:center;color:#fff;position:sticky;top:0;z-index:20}
 .header h1{font-size:19px;font-weight:700}
 .header p{font-size:12px;opacity:.8;margin-top:3px}
-.test-banner{background:#FEF3C7;color:#92400E;font-size:12px;font-weight:600;text-align:center;padding:7px 12px}
 .content{padding:14px;display:none}
 .content.active{display:block}
 .card{background:#fff;border-radius:16px;margin-bottom:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.07)}
@@ -21,6 +20,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#F2F2F7;
 .row:last-child{border-bottom:none}
 .row-main{flex:1;min-width:0}
 .row-title{font-size:14.5px;color:#1C1C1E;font-weight:600}
+.row-title.thin{font-weight:400}
 .row-sub{font-size:12px;color:#8E8E93;margin-top:2px}
 .chip{font-size:11.5px;font-weight:700;border-radius:20px;padding:4px 10px;white-space:nowrap;flex-shrink:0}
 .chip.red{background:#FEE2E2;color:#991B1B}
@@ -41,33 +41,40 @@ body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#F2F2F7;
 .btn-main:active{opacity:.85}
 .btn-line{width:100%;padding:12px;background:#fff;color:#621727;border:2px solid #621727;border-radius:12px;font-size:14.5px;font-weight:600;cursor:pointer;margin-top:8px}
 .btn-green{width:100%;padding:14px;background:#166534;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px}
+.btn-red{width:100%;padding:11px;background:#fff;color:#991B1B;border:1.5px solid #FCA5A5;border-radius:12px;font-size:13.5px;font-weight:600;cursor:pointer;margin-top:8px}
 .note{padding:8px 16px;font-size:12px;color:#8E8E93;font-style:italic}
-.feed-item{padding:11px 16px;border-bottom:.5px solid #F2F2F7;display:flex;gap:10px;align-items:flex-start}
-.feed-item:last-child{border-bottom:none}
-.feed-time{font-size:11px;font-weight:700;color:#621727;flex-shrink:0;margin-top:2px;min-width:40px}
-.feed-text{font-size:13.5px;color:#1C1C1E;line-height:1.45}
-.feed-text small{color:#8E8E93}
+.empty{padding:18px 16px;text-align:center;font-size:13px;color:#8E8E93}
+.loading{padding:40px 16px;text-align:center;font-size:14px;color:#8E8E93}
+.spin{display:inline-block;width:28px;height:28px;border:3px solid #E5E5EA;border-top-color:#621727;border-radius:50%;animation:sp 1s linear infinite;margin-bottom:10px}
+@keyframes sp{to{transform:rotate(360deg)}}
 /* график */
 .week-scroll{overflow-x:auto;padding:4px 0 8px}
 table.week{border-collapse:collapse;width:100%;min-width:560px}
 table.week th{background:#F8F8F8;font-size:10.5px;color:#8E8E93;font-weight:700;text-transform:uppercase;padding:8px 4px;border-bottom:1px solid #E5E5EA;text-align:center}
 table.week th.today{background:#F5E6EA;color:#621727}
-table.week td{border-bottom:.5px solid #F2F2F7;border-right:.5px solid #F2F2F7;padding:6px 4px;font-size:11px;text-align:center;vertical-align:middle;min-width:64px;height:44px}
-table.week td.objcol{font-size:11px;font-weight:700;color:#1C1C1E;text-align:left;padding-left:12px;min-width:110px;background:#fff;position:sticky;left:0}
-table.week td .m{display:inline-block;border-radius:8px;padding:3px 7px;font-weight:700;font-size:10.5px;cursor:pointer}
-.m.m1{background:#F5E6EA;color:#621727}.m.m2{background:#DBEAFE;color:#1E40AF}.m.m3{background:#DCFCE7;color:#166534}.m.m4{background:#FEF3C7;color:#92400E}.m.m5{background:#EDE9FE;color:#5B21B6}
-.legend{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px}
+table.week td{border-bottom:.5px solid #F2F2F7;border-right:.5px solid #F2F2F7;padding:6px 4px;font-size:11px;text-align:center;vertical-align:middle;min-width:64px;height:44px;cursor:pointer}
+table.week td.objcol{font-size:11px;font-weight:700;color:#1C1C1E;text-align:left;padding-left:12px;min-width:110px;background:#fff;position:sticky;left:0;cursor:default}
+table.week td .m{display:inline-block;border-radius:8px;padding:3px 7px;font-weight:700;font-size:10.5px}
+.m.m0{background:#F5E6EA;color:#621727}.m.m1{background:#DBEAFE;color:#1E40AF}.m.m2{background:#DCFCE7;color:#166534}.m.m3{background:#FEF3C7;color:#92400E}.m.m4{background:#EDE9FE;color:#5B21B6}
 /* расходы */
 .exp-sum{display:flex;justify-content:space-between;padding:13px 16px;background:#F8F8F8}
 .exp-sum b{color:#621727;font-size:17px}
 .exp-sum span{font-size:13px;color:#8E8E93;align-self:center}
-input[type=text],input[type=number],input[type=date],select{border:1.5px solid #E5E5EA;border-radius:10px;padding:9px 10px;font-size:14px;color:#1C1C1E;background:#fff;outline:none;width:100%}
+input[type=text],input[type=number],select{border:1.5px solid #E5E5EA;border-radius:10px;padding:9px 10px;font-size:14px;color:#1C1C1E;background:#fff;outline:none;width:100%}
 input:focus,select:focus{border-color:#621727}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 16px}
 .form-grid .full{grid-column:1/3}
 .flabel{font-size:11px;color:#8E8E93;margin-bottom:3px}
 .photo-btn{display:flex;align-items:center;justify-content:center;gap:8px;border:1.5px dashed #621727;background:#F5E6EA;color:#621727;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;width:100%}
 .photo-prev{max-width:100%;border-radius:12px;margin-top:8px;display:none}
+/* модалка выбора горничной */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;align-items:flex-end}
+.modal-bg.show{display:flex}
+.modal{background:#fff;border-radius:20px 20px 0 0;width:100%;padding:18px 16px 28px}
+.modal h3{font-size:15px;color:#1C1C1E;margin-bottom:12px;text-align:center}
+.modal .m-btn{width:100%;padding:13px;margin-bottom:8px;border:1.5px solid #E5E5EA;background:#fff;border-radius:12px;font-size:15px;font-weight:600;color:#1C1C1E;cursor:pointer}
+.modal .m-btn:active{background:#F2F2F7}
+.modal .m-del{color:#991B1B;border-color:#FCA5A5}
 /* нижнее меню */
 .tabbar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:.5px solid #E5E5EA;display:flex;z-index:30;padding-bottom:env(safe-area-inset-bottom)}
 .tab{flex:1;text-align:center;padding:9px 2px 8px;cursor:pointer;color:#8E8E93}
@@ -75,7 +82,9 @@ input:focus,select:focus{border-color:#621727}
 .tab .lb{font-size:9.5px;font-weight:600;margin-top:1px}
 .tab.on{color:#621727}
 .footer{text-align:center;font-size:11px;color:#C7C7CC;padding:16px 0 4px}
-.empty{padding:20px 16px;text-align:center;font-size:13px;color:#8E8E93}
+.refresh{position:fixed;right:14px;bottom:76px;width:46px;height:46px;border-radius:50%;background:#621727;color:#fff;border:none;font-size:20px;box-shadow:0 3px 10px rgba(0,0,0,.25);cursor:pointer;z-index:29}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:120px;background:#1C1C1E;color:#fff;font-size:13px;padding:10px 18px;border-radius:20px;opacity:0;transition:opacity .3s;z-index:60;pointer-events:none;max-width:88%;text-align:center}
+.toast.show{opacity:.94}
 </style>
 </head>
 <body>
@@ -84,249 +93,342 @@ input:focus,select:focus{border-color:#621727}
 <h1 id="hTitle">📅 Сегодня</h1>
 <p>OLEAND · Помощник хозяйки</p>
 </div>
-<div class="test-banner">🧪 ТЕСТОВЫЙ ВАРИАНТ — данные для примера, ничего никуда не отправляется</div>
 
-<!-- ================= СЕГОДНЯ ================= -->
-<div class="content active" id="tab-today">
-
-<div class="card">
-<div class="card-title">🏠 Заезды и выезды <span class="badge" id="dateNow"></span></div>
-<div class="row"><div class="row-main"><div class="row-title">Царская столица</div><div class="row-sub">выезд до 12:00 · заезд в 15:00 — убрать к заселению!</div></div><span class="chip red">🔴 выезд + 🟢 заезд</span></div>
-<div class="row"><div class="row-main"><div class="row-title">NUDE Манчестерская</div><div class="row-sub">выезд до 12:00</div></div><span class="chip red">🔴 выезд</span></div>
-<div class="row"><div class="row-main"><div class="row-title">GRAY Лиговский проспект</div><div class="row-sub">заезд в 14:00 · квартира готова ✅</div></div><span class="chip green">🟢 заезд</span></div>
-</div>
-
-<div class="card">
-<div class="card-title">🧹 Уборки сегодня <span class="badge">2</span></div>
-<div class="row"><div class="row-main"><div class="row-title">Царская столица</div><div class="row-sub">Валерия · срочно — заезд в 15:00</div></div><span class="chip amber">в работе</span></div>
-<div class="row"><div class="row-main"><div class="row-title">NUDE Манчестерская</div><div class="row-sub">Ольга</div></div><span class="chip gray">ожидает</span></div>
-</div>
-
-<div class="card">
-<div class="card-title">🧺 Бельё к забору <span class="badge">12 шт</span></div>
-<div class="row"><div class="row-main"><div class="row-title">Петроградка б+м</div><div class="row-sub">подготовлено вчера, 12 шт</div></div><span class="chip wine">ждёт прачку</span></div>
-<div class="note">Черновик по Царской столице появится после подтверждения уборки</div>
-</div>
-
-<div class="card">
-<div class="card-title">🔔 Напоминания</div>
-<div class="feed-item"><div class="feed-time">9:00</div><div class="feed-text">План на день разослан ✅</div></div>
-<div class="feed-item"><div class="feed-time">10:00</div><div class="feed-text">Черновики накладных: Царская столица, NUDE Манчестерская</div></div>
-<div class="feed-item"><div class="feed-time">13:00</div><div class="feed-text">Завтра выезжают: GREEN Тосина <small>· текст гостю готов 👇</small></div></div>
-<div class="feed-item"><div class="feed-time">1 авг</div><div class="feed-text">Сверка с прачкой за июль <small>· придёт автоматически</small></div></div>
-</div>
-
-</div>
-
-<!-- ================= УБОРКИ ================= -->
-<div class="content" id="tab-clean">
-
-<div class="card">
-<div class="card-title">🧹 Уборки на сегодня</div>
-<div class="row">
-<div class="row-main"><div class="row-title">Царская столица</div><div class="row-sub">Валерия · заезд в 15:00 🔥</div></div>
-<div class="status-btns" data-key="c1"><button class="st-btn" onclick="setSt('c1',0,this)">взяла</button><button class="st-btn on" onclick="setSt('c1',1,this)">убираю</button><button class="st-btn" onclick="setSt('c1',2,this)">готово ✅</button></div>
-</div>
-<div class="row">
-<div class="row-main"><div class="row-title">NUDE Манчестерская</div><div class="row-sub">Ольга</div></div>
-<div class="status-btns" data-key="c2"><button class="st-btn" onclick="setSt('c2',0,this)">взяла</button><button class="st-btn" onclick="setSt('c2',1,this)">убираю</button><button class="st-btn" onclick="setSt('c2',2,this)">готово ✅</button></div>
-</div>
-</div>
-
-<div class="card">
-<div class="card-title">📌 Что проверить при уборке</div>
-<div class="note">Чек-лист расходников — отметить наличие и отправить хозяйке</div>
-<div style="padding:0 16px 14px"><button class="btn-line" onclick="alert('В рабочей версии откроется чек-лист расходников')">🧾 Открыть чек-лист расходников</button></div>
-</div>
-
-<div class="card">
-<div class="card-title">✅ Сделано за неделю</div>
-<div class="row"><div class="row-main"><div class="row-title">GRAY Лиговский проспект</div><div class="row-sub">вчера · Мария</div></div><span class="chip green">готово</span></div>
-<div class="row"><div class="row-main"><div class="row-title">Петроградка б+м</div><div class="row-sub">вчера · Анна</div></div><span class="chip green">готово</span></div>
-<div class="row"><div class="row-main"><div class="row-title">Саперный б+м</div><div class="row-sub">14.07 · Валерия</div></div><span class="chip green">готово</span></div>
-</div>
-
-</div>
-
-<!-- ================= БЕЛЬЁ ================= -->
-<div class="content" id="tab-laundry">
-
-<div class="card">
-<div class="card-title">📋 Черновик — выезд сегодня</div>
-<div class="note">Царская столица · максимальный комплект по норме. Убавь, если гостей было меньше</div>
-<div class="row"><div class="row-main"><div class="row-title" style="font-weight:400">Пододеяльник 2,0</div></div><div class="qty-wrap"><button class="qty-btn" onclick="q('l1',-1)">−</button><span class="qty-num" id="l1">1</span><button class="qty-btn" onclick="q('l1',1)">+</button></div></div>
-<div class="row"><div class="row-main"><div class="row-title" style="font-weight:400">Пододеяльник 1,5</div></div><div class="qty-wrap"><button class="qty-btn" onclick="q('l2',-1)">−</button><span class="qty-num" id="l2">3</span><button class="qty-btn" onclick="q('l2',1)">+</button></div></div>
-<div class="row"><div class="row-main"><div class="row-title" style="font-weight:400">Простыня 2,0</div></div><div class="qty-wrap"><button class="qty-btn" onclick="q('l3',-1)">−</button><span class="qty-num" id="l3">1</span><button class="qty-btn" onclick="q('l3',1)">+</button></div></div>
-<div class="row"><div class="row-main"><div class="row-title" style="font-weight:400">Простыня 1,5</div></div><div class="qty-wrap"><button class="qty-btn" onclick="q('l4',-1)">−</button><span class="qty-num" id="l4">3</span><button class="qty-btn" onclick="q('l4',1)">+</button></div></div>
-<div class="row"><div class="row-main"><div class="row-title" style="font-weight:400">Наволочка 2,0</div></div><div class="qty-wrap"><button class="qty-btn" onclick="q('l5',-1)">−</button><span class="qty-num" id="l5">6</span><button class="qty-btn" onclick="q('l5',1)">+</button></div></div>
-<div class="row"><div class="row-main"><div class="row-title" style="font-weight:400">Полотенце большое</div></div><div class="qty-wrap"><button class="qty-btn" onclick="q('l6',-1)">−</button><span class="qty-num" id="l6">6</span><button class="qty-btn" onclick="q('l6',1)">+</button></div></div>
-<div class="row"><div class="row-main"><div class="row-title" style="font-weight:400">Полотенце среднее</div></div><div class="qty-wrap"><button class="qty-btn" onclick="q('l7',-1)">−</button><span class="qty-num" id="l7">6</span><button class="qty-btn" onclick="q('l7',1)">+</button></div></div>
-<div class="row"><div class="row-main"><div class="row-title" style="font-weight:400">Полотенце для ног</div></div><div class="qty-wrap"><button class="qty-btn" onclick="q('l8',-1)">−</button><span class="qty-num" id="l8">2</span><button class="qty-btn" onclick="q('l8',1)">+</button></div></div>
-<div class="row"><div class="row-main"><div class="row-title">Итого</div></div><span class="chip wine" id="lTotal">28 шт</span></div>
-<div style="padding:4px 16px 14px">
-<button class="btn-green" onclick="alert('В рабочей версии: статус → подготовлено, уведомление прачке и хозяйке')">✅ Всё верно — подготовлено</button>
-<button class="btn-line" onclick="alert('В рабочей версии откроется фирменная накладная')">🧾 Открыть фирменную накладную</button>
-</div>
-</div>
-
-<div class="card">
-<div class="card-title">🚚 Ждёт забора прачкой <span class="badge">12 шт</span></div>
-<div class="row"><div class="row-main"><div class="row-title">Петроградка б+м</div><div class="row-sub">Пододеяльник 2,0 — 1 · Простыня 2,0 — 1 · Наволочка 2,0 — 3 · Полотенца — 7</div></div><span class="chip wine">подготовлено</span></div>
-<div style="padding:4px 16px 14px"><button class="btn-main" onclick="alert('В рабочей версии: всё подготовленное → в прачке, накладная-факт в чат прачки')">🚚 Прачка забрала бельё</button></div>
-</div>
-
-<div class="card">
-<div class="card-title">🧺 Сейчас в прачке <span class="badge">34 шт</span></div>
-<div class="row"><div class="row-main"><div class="row-title">GRAY Лиговский проспект</div><div class="row-sub">сдано 14.07 · 19 шт</div></div><span class="chip blue">в прачке</span></div>
-<div class="row"><div class="row-main"><div class="row-title">Саперный б+м</div><div class="row-sub">сдано 14.07 · 15 шт</div></div><span class="chip blue">в прачке</span></div>
-<div style="padding:4px 16px 14px"><button class="btn-line" onclick="alert('В рабочей версии: отметить галочками, что вернулось')">📦 Приняли из прачки</button></div>
-</div>
-
-</div>
-
-<!-- ================= ГРАФИК ================= -->
-<div class="content" id="tab-schedule">
-
-<div class="card">
-<div class="card-title">👥 График горничных <span class="badge">14–20 июля</span></div>
-<div class="week-scroll">
-<table class="week">
-<tr><th style="text-align:left;padding-left:12px">Объект</th><th>Пн 14</th><th>Вт 15</th><th class="today">Ср 16</th><th>Чт 17</th><th>Пт 18</th><th>Сб 19</th><th>Вс 20</th></tr>
-<tr><td class="objcol">Петроградка</td><td><span class="m m3" onclick="mtap(this)">Анна</span></td><td></td><td></td><td><span class="m m1" onclick="mtap(this)">Валерия</span></td><td></td><td></td><td><span class="m m3" onclick="mtap(this)">Анна</span></td></tr>
-<tr><td class="objcol">Саперный</td><td><span class="m m1" onclick="mtap(this)">Валерия</span></td><td></td><td></td><td></td><td><span class="m m2" onclick="mtap(this)">Мария</span></td><td></td><td></td></tr>
-<tr><td class="objcol">Царская столица</td><td></td><td></td><td><span class="m m1" onclick="mtap(this)">Валерия</span></td><td></td><td></td><td><span class="m m5" onclick="mtap(this)">Ольга</span></td><td></td></tr>
-<tr><td class="objcol">GREEN Тосина</td><td></td><td><span class="m m2" onclick="mtap(this)">Мария</span></td><td></td><td><span class="m m2" onclick="mtap(this)">Мария</span></td><td></td><td></td><td></td></tr>
-<tr><td class="objcol">NUDE Манчестерская</td><td></td><td></td><td><span class="m m5" onclick="mtap(this)">Ольга</span></td><td></td><td></td><td><span class="m m1" onclick="mtap(this)">Валерия</span></td><td></td></tr>
-<tr><td class="objcol">TIFFANY Ветеранов</td><td></td><td><span class="m m3" onclick="mtap(this)">Анна</span></td><td></td><td></td><td></td><td></td><td><span class="m m2" onclick="mtap(this)">Мария</span></td></tr>
-<tr><td class="objcol">GRAY Лиговский</td><td></td><td><span class="m m2" onclick="mtap(this)">Мария</span></td><td></td><td></td><td><span class="m m5" onclick="mtap(this)">Ольга</span></td><td></td><td></td></tr>
-</table>
-</div>
-<div class="legend">
-<span class="chip wine">Валерия</span><span class="chip blue">Мария</span><span class="chip green">Анна</span><span class="chip amber">Гуля</span><span class="chip" style="background:#EDE9FE;color:#5B21B6">Ольга</span>
-</div>
-<div class="note">Нажми на имя в клетке, чтобы изменить (в рабочей версии). Каждой горничной утром бот пришлёт её день.</div>
-</div>
-
-<div class="card">
-<div class="card-title">📊 Смены за неделю</div>
-<div class="row"><div class="row-main"><div class="row-title">Валерия</div></div><span class="chip wine">4 уборки</span></div>
-<div class="row"><div class="row-main"><div class="row-title">Мария</div></div><span class="chip blue">5 уборок</span></div>
-<div class="row"><div class="row-main"><div class="row-title">Анна</div></div><span class="chip green">3 уборки</span></div>
-<div class="row"><div class="row-main"><div class="row-title">Ольга</div></div><span class="chip" style="background:#EDE9FE;color:#5B21B6">3 уборки</span></div>
-</div>
-
-</div>
-
-<!-- ================= РАСХОДЫ ================= -->
-<div class="content" id="tab-expenses">
-
-<div class="card">
-<div class="card-title">💰 Июль 2026</div>
-<div class="exp-sum"><span>Всего расходов</span><b id="expTotal">8 470 ₽</b></div>
-</div>
-
-<div class="card">
-<div class="card-title">➕ Добавить расход</div>
-<div class="form-grid">
-<div class="full"><div class="flabel">Объект</div><select id="eObj"><option>Петроградка б+м</option><option>Саперный б+м</option><option>Царская столица</option><option>BLUE Железнодор.</option><option>GREEN Тосина</option><option>NUDE Манчестерская</option><option>TIFFANY Ветеранов</option><option>GRAY Лиговский проспект</option><option>Общее</option></select></div>
-<div><div class="flabel">Сумма, ₽</div><input type="number" id="eSum" placeholder="0"></div>
-<div><div class="flabel">Кто купил</div><select id="eWho"><option>Гуля</option><option>Валерия</option><option>Мария</option><option>Анна</option><option>Ольга</option></select></div>
-<div class="full"><div class="flabel">Что купили</div><input type="text" id="eWhat" placeholder="напр. химия для уборки, лампочки…"></div>
-<div class="full">
-<label class="photo-btn">📸 Прикрепить фото чека<input type="file" accept="image/*" style="display:none" onchange="prevPhoto(this)"></label>
-<img class="photo-prev" id="ePrev">
-</div>
-<div class="full"><button class="btn-main" onclick="addExp()">Сохранить расход</button></div>
-</div>
-</div>
-
-<div class="card">
-<div class="card-title">🧾 Последние расходы</div>
-<div id="expList">
-<div class="row"><div class="row-main"><div class="row-title">Химия Grass + губки</div><div class="row-sub">15.07 · Царская столица · Валерия · чек 📎</div></div><span class="chip wine">2 340 ₽</span></div>
-<div class="row"><div class="row-main"><div class="row-title">Туалетная бумага, мыло (опт)</div><div class="row-sub">12.07 · Общее · Гуля · чек 📎</div></div><span class="chip wine">3 180 ₽</span></div>
-<div class="row"><div class="row-main"><div class="row-title">Лампочки, батарейки</div><div class="row-sub">08.07 · GRAY Лиговский · Мария · чек 📎</div></div><span class="chip wine">950 ₽</span></div>
-<div class="row"><div class="row-main"><div class="row-title">Капсулы для кофемашины</div><div class="row-sub">05.07 · Саперный б+м · Гуля · чек 📎</div></div><span class="chip wine">2 000 ₽</span></div>
-</div>
-</div>
-
-<div class="card">
-<div class="card-title">📊 По объектам за месяц</div>
-<div class="row"><div class="row-main"><div class="row-title">Общее (на все объекты)</div></div><span class="chip gray">3 180 ₽</span></div>
-<div class="row"><div class="row-main"><div class="row-title">Царская столица</div></div><span class="chip gray">2 340 ₽</span></div>
-<div class="row"><div class="row-main"><div class="row-title">Саперный б+м</div></div><span class="chip gray">2 000 ₽</span></div>
-<div class="row"><div class="row-main"><div class="row-title">GRAY Лиговский проспект</div></div><span class="chip gray">950 ₽</span></div>
-</div>
-
-</div>
+<div class="content active" id="tab-today"><div class="loading"><div class="spin"></div><br>Загружаю данные…</div></div>
+<div class="content" id="tab-clean"></div>
+<div class="content" id="tab-laundry"></div>
+<div class="content" id="tab-schedule"></div>
+<div class="content" id="tab-expenses"></div>
 
 <div class="footer">© by G·N · 2026</div>
 
-<!-- ================= НИЖНЕЕ МЕНЮ ================= -->
+<button class="refresh" onclick="load(true)" title="Обновить">↻</button>
+
 <div class="tabbar">
-<div class="tab on" onclick="go('today',this)"><div class="ic">📅</div><div class="lb">Сегодня</div></div>
-<div class="tab" onclick="go('clean',this)"><div class="ic">🧹</div><div class="lb">Уборки</div></div>
-<div class="tab" onclick="go('laundry',this)"><div class="ic">🧺</div><div class="lb">Бельё</div></div>
-<div class="tab" onclick="go('schedule',this)"><div class="ic">👥</div><div class="lb">График</div></div>
-<div class="tab" onclick="go('expenses',this)"><div class="ic">💰</div><div class="lb">Расходы</div></div>
+<div class="tab on" data-t="today" onclick="go('today',this)"><div class="ic">📅</div><div class="lb">Сегодня</div></div>
+<div class="tab" data-t="clean" onclick="go('clean',this)"><div class="ic">🧹</div><div class="lb">Уборки</div></div>
+<div class="tab" data-t="laundry" onclick="go('laundry',this)"><div class="ic">🧺</div><div class="lb">Бельё</div></div>
+<div class="tab" data-t="schedule" onclick="go('schedule',this)"><div class="ic">👥</div><div class="lb">График</div></div>
+<div class="tab" data-t="expenses" onclick="go('expenses',this)"><div class="ic">💰</div><div class="lb">Расходы</div></div>
 </div>
 
-<script>
-if (window.Telegram && Telegram.WebApp) { Telegram.WebApp.ready(); Telegram.WebApp.expand(); }
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+<div class="modal" id="modalBody"></div>
+</div>
+<div class="toast" id="toast"></div>
 
-var titles = { today:'📅 Сегодня', clean:'🧹 Уборки', laundry:'🧺 Бельё', schedule:'👥 График', expenses:'💰 Расходы' };
+<script>
+const tgApp = (window.Telegram && Telegram.WebApp) ? Telegram.WebApp : null;
+if (tgApp) { tgApp.ready(); tgApp.expand(); try { tgApp.setHeaderColor('#621727'); } catch(e) {} }
+const CHAT = (tgApp && tgApp.initDataUnsafe && tgApp.initDataUnsafe.user) ? tgApp.initDataUnsafe.user.id : '';
+const BOT_URL = 'https://script.google.com/macros/s/AKfycbw5yFaycoIs3tgKE7U2uElBz8UuxdUcOY7RxLABN_fenDEut2E2lqBWltO-1lo-Dz_CNA/exec';
+const PRIEM_URL = 'https://qnesterowa-hash.github.io/oleand/priem.html';
+const OSTATKI_URL = 'https://qnesterowa-hash.github.io/oleand/ostatki.html';
+const MAIDS = ['Валерия','Мария','Анна','Гуля','Ольга'];
+const OBJECTS = ['Петроградка б+м','Саперный б+м','Царская столица','BLUE Железнодор.','GREEN Тосина','NUDE Манчестерская','TIFFANY Ветеранов','GRAY Лиговский проспект'];
+const DOW = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+let DATA = null;
+
+const titles = { today:'📅 Сегодня', clean:'🧹 Уборки', laundry:'🧺 Бельё', schedule:'👥 График', expenses:'💰 Расходы' };
 function go(name, el) {
-  document.querySelectorAll('.content').forEach(function(c){ c.classList.remove('active'); });
+  document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('on'); });
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
   el.classList.add('on');
   document.getElementById('hTitle').textContent = titles[name];
   window.scrollTo(0, 0);
 }
 
-var d = new Date();
-document.getElementById('dateNow').textContent = d.toLocaleDateString('ru-RU', { day:'numeric', month:'long' });
-
-function setSt(key, idx, btn) {
-  var wrap = btn.parentElement;
-  wrap.querySelectorAll('.st-btn').forEach(function(b){ b.classList.remove('on'); });
-  btn.classList.add('on');
-  if (idx === 2) alert('В рабочей версии: хозяйке придёт «уборка готова», бот создаст черновик накладной');
+function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+function toast(t){ const el = document.getElementById('toast'); el.textContent = t; el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 2600); }
+function post(payload, msg, reload) {
+  payload.chat = CHAT;
+  fetch(BOT_URL, { method:'POST', mode:'no-cors', body: JSON.stringify(payload) })
+    .then(() => { if (msg) toast(msg); if (reload) setTimeout(() => load(false), 1600); })
+    .catch(() => toast('⚠ Нет связи — попробуй ещё раз'));
 }
 
-function q(id, delta) {
-  var el = document.getElementById(id);
-  var v = Math.max(0, Math.min(30, parseInt(el.textContent) + delta));
-  el.textContent = v;
-  var t = 0;
-  for (var i = 1; i <= 8; i++) t += parseInt(document.getElementById('l' + i).textContent);
-  document.getElementById('lTotal').textContent = t + ' шт';
+// ---------- Загрузка ----------
+function load(showSpin) {
+  if (showSpin) document.getElementById('tab-today').innerHTML = '<div class="loading"><div class="spin"></div><br>Обновляю…</div>';
+  fetch(BOT_URL + '?api=app&t=' + Date.now())
+    .then(r => r.json())
+    .then(d => { DATA = d; renderAll(); })
+    .catch(() => {
+      document.getElementById('tab-today').innerHTML = '<div class="card"><div class="empty">⚠ Не получилось загрузить данные.<br>Проверь интернет и нажми ↻</div></div>';
+    });
 }
 
+function renderAll() { rToday(); rClean(); rLaundry(); rSchedule(); rExpenses(); }
+
+// ---------- СЕГОДНЯ ----------
+function rToday() {
+  const d = DATA;
+  let h = '<div class="card"><div class="card-title">🏠 Заезды и выезды <span class="badge">' + esc(d.date) + '</span></div>';
+  if (!d.today.length) h += '<div class="empty">Сегодня заездов и выездов нет ✅</div>';
+  d.today.forEach(t => {
+    let chip = t.out && t.in_ ? '<span class="chip red">🔴 выезд + 🟢 заезд</span>' : t.out ? '<span class="chip red">🔴 выезд</span>' : '<span class="chip green">🟢 заезд</span>';
+    let sub = t.out && t.in_ ? 'убрать к заселению!' : t.out ? 'уборка и смена белья' : 'подготовить к заезду';
+    h += '<div class="row"><div class="row-main"><div class="row-title">' + esc(t.obj) + '</div><div class="row-sub">' + sub + '</div></div>' + chip + '</div>';
+  });
+  h += '</div>';
+
+  h += '<div class="card"><div class="card-title">🧹 Уборки сегодня <span class="badge">' + d.cleanings.length + '</span></div>';
+  if (!d.cleanings.length) h += '<div class="empty">Отметок пока нет — они появятся из вкладки «Уборки»</div>';
+  d.cleanings.forEach(c => {
+    const cls = c.status === 'готово' ? 'green' : c.status === 'убираю' ? 'amber' : 'gray';
+    h += '<div class="row"><div class="row-main"><div class="row-title">' + esc(c.obj) + '</div><div class="row-sub">' + esc(c.maid || '—') + '</div></div><span class="chip ' + cls + '">' + esc(c.status) + '</span></div>';
+  });
+  h += '</div>';
+
+  const prepTotal = d.prepared.reduce((s, p) => s + p.total, 0);
+  h += '<div class="card"><div class="card-title">🧺 Бельё к забору <span class="badge">' + prepTotal + ' шт</span></div>';
+  if (!d.prepared.length) h += '<div class="empty">Подготовленного белья нет</div>';
+  d.prepared.forEach(p => { h += '<div class="row"><div class="row-main"><div class="row-title">' + esc(p.obj) + '</div><div class="row-sub">' + p.total + ' шт</div></div><span class="chip wine">ждёт прачку</span></div>'; });
+  h += '</div>';
+
+  if (d.drafts.length) {
+    h += '<div class="card"><div class="card-title">📋 Черновики накладных <span class="badge">' + d.drafts.length + '</span></div>';
+    d.drafts.forEach(dr => { const tot = dr.items.reduce((s,i)=>s+i.qty,0); h += '<div class="row"><div class="row-main"><div class="row-title">' + esc(dr.obj) + '</div><div class="row-sub">' + tot + ' шт — подтверди во вкладке «Бельё»</div></div><span class="chip amber">черновик</span></div>'; });
+    h += '</div>';
+  }
+
+  h += '<div class="card"><div class="card-title">🔔 Напоминания бота</div>' +
+    '<div class="row"><div class="row-main"><div class="row-title thin">9:00 — план на день</div></div></div>' +
+    '<div class="row"><div class="row-main"><div class="row-title thin">10:00 — черновики накладных в дни выездов</div></div></div>' +
+    '<div class="row"><div class="row-main"><div class="row-title thin">13:00 — кто выезжает завтра + текст гостю</div></div></div>' +
+    '<div class="row"><div class="row-main"><div class="row-title thin">1-го числа — сверка с прачкой за месяц</div></div></div></div>';
+
+  document.getElementById('tab-today').innerHTML = h;
+}
+
+// ---------- УБОРКИ ----------
+function rClean() {
+  const d = DATA;
+  const today = isoToday();
+  let h = '<div class="card"><div class="card-title">🧹 Уборки на сегодня</div>';
+  const objs = d.today.filter(t => t.out).map(t => t.obj);
+  d.cleanings.forEach(c => { if (objs.indexOf(c.obj) < 0) objs.push(c.obj); });
+  if (!objs.length) h += '<div class="empty">Сегодня выездов нет ✅<br>Добавить уборку можно кнопкой ниже</div>';
+  objs.forEach(obj => {
+    const c = d.cleanings.find(x => x.obj === obj) || { maid:'', status:'' };
+    const sched = d.schedule.find(s => s.date === today && objMatch(s.obj, obj));
+    const maid = c.maid || (sched ? sched.maid : '');
+    h += '<div class="row"><div class="row-main"><div class="row-title">' + esc(obj) + '</div><div class="row-sub">' + esc(maid || 'горничная не назначена') + '</div></div><div class="status-btns">' +
+      stBtn(obj, maid, 'взяла', c.status) + stBtn(obj, maid, 'убираю', c.status) + stBtn(obj, maid, 'готово', c.status) + '</div></div>';
+  });
+  h += '<div style="padding:10px 16px"><button class="btn-line" onclick="addCleanDlg()">+ Добавить уборку вручную</button></div></div>';
+  h += '<div class="card"><div class="card-title">🧾 Чек-лист расходников</div><div style="padding:10px 16px"><button class="btn-line" onclick="openUrl(\'https://qnesterowa-hash.github.io/oleand/checklist.html\')">Открыть чек-лист</button></div></div>';
+  document.getElementById('tab-clean').innerHTML = h;
+}
+function stBtn(obj, maid, st, cur) {
+  const lb = st === 'готово' ? 'готово ✅' : st;
+  return '<button class="st-btn' + (cur === st ? ' on' : '') + '" onclick="setClean(\'' + jsq(obj) + '\',\'' + jsq(maid) + '\',\'' + st + '\')">' + lb + '</button>';
+}
+function setClean(obj, maid, status) {
+  if (!maid) { pickMaid('Кто убирает ' + obj + '?', m => doSetClean(obj, m, status)); return; }
+  doSetClean(obj, maid, status);
+}
+function doSetClean(obj, maid, status) {
+  const c = DATA.cleanings.find(x => x.obj === obj);
+  if (c) { c.status = status; c.maid = maid; } else DATA.cleanings.push({ obj: obj, maid: maid, status: status });
+  rClean(); rToday();
+  post({ oleand:'app_clean', date: isoToday(), obj: obj, maid: maid, status: status }, status === 'готово' ? '✅ Готово! Хозяйке ушло уведомление' : 'Сохранено: ' + status, false);
+}
+function addCleanDlg() {
+  pickFrom('Какой объект убираем?', OBJECTS, obj => pickMaid('Кто убирает?', m => doSetClean(obj, m, 'взяла')));
+}
+
+// ---------- БЕЛЬЁ ----------
+function rLaundry() {
+  const d = DATA;
+  let h = '';
+  if (!d.drafts.length) h += '<div class="card"><div class="card-title">📋 Черновики накладных</div><div class="empty">Черновиков нет. Они создаются автоматически в 10:00 в день выезда</div></div>';
+  d.drafts.forEach((dr, di) => {
+    h += '<div class="card"><div class="card-title">📋 Черновик — ' + esc(dr.obj) + '</div><div class="note">' + esc(dr.date) + ' · максимальный комплект по норме</div>';
+    dr.items.forEach(it => {
+      h += '<div class="row"><div class="row-main"><div class="row-title thin">' + esc(it.name) + '</div></div><div class="qty-wrap">' +
+        '<button class="qty-btn" onclick="dq(' + di + ',\'' + jsq(it.sfx) + '\',-1)">−</button><span class="qty-num" id="q_' + di + '_' + esc(it.sfx) + '">' + it.qty + '</span><button class="qty-btn" onclick="dq(' + di + ',\'' + jsq(it.sfx) + '\',1)">+</button></div></div>';
+    });
+    const tot = dr.items.reduce((s,i)=>s+i.qty,0);
+    h += '<div class="row"><div class="row-main"><div class="row-title">Итого</div></div><span class="chip wine" id="tot_' + di + '">' + tot + ' шт</span></div>';
+    h += '<div style="padding:4px 16px 14px"><button class="btn-green" onclick="prep(' + di + ')">✅ Всё верно — подготовлено</button>' +
+      '<button class="btn-line" onclick="openUrl(\'https://qnesterowa-hash.github.io/oleand/nakladnaya.html?id=' + esc(dr.id) + '\')">🧾 Фирменная накладная</button>' +
+      '<button class="btn-red" onclick="cancelDraft(' + di + ')">❌ Уборки не было — отменить</button></div></div>';
+  });
+
+  const prepTotal = d.prepared.reduce((s,p)=>s+p.total,0);
+  h += '<div class="card"><div class="card-title">🚚 Ждёт забора прачкой <span class="badge">' + prepTotal + ' шт</span></div>';
+  if (!d.prepared.length) h += '<div class="empty">Подготовленного белья нет</div>';
+  d.prepared.forEach(p => { h += '<div class="row"><div class="row-main"><div class="row-title">' + esc(p.obj) + '</div><div class="row-sub">' + p.items.map(esc).join(' · ') + '</div></div><span class="chip wine">' + p.total + ' шт</span></div>'; });
+  if (d.prepared.length) h += '<div style="padding:4px 16px 14px"><button class="btn-main" onclick="pickup()">🚚 Прачка забрала бельё</button></div>';
+  h += '</div>';
+
+  const lTotal = d.laundry.reduce((s,l)=>s+l.total,0);
+  h += '<div class="card"><div class="card-title">🧺 Сейчас в прачке <span class="badge">' + lTotal + ' шт</span></div>';
+  if (!d.laundry.length) h += '<div class="empty">В прачке ничего нет ✅</div>';
+  d.laundry.forEach(l => { h += '<div class="row"><div class="row-main"><div class="row-title">' + esc(l.obj) + '</div><div class="row-sub">сдано ' + esc(l.date) + '</div></div><span class="chip blue">' + l.total + ' шт</span></div>'; });
+  h += '<div style="padding:4px 16px 14px"><button class="btn-line" onclick="openUrl(\'' + PRIEM_URL + '\')">📦 Приняли из прачки</button>' +
+    '<button class="btn-line" onclick="openUrl(\'' + OSTATKI_URL + '\')">📊 Остатки по объектам</button></div></div>';
+
+  document.getElementById('tab-laundry').innerHTML = h;
+}
+function dq(di, sfx, delta) {
+  const dr = DATA.drafts[di];
+  const it = dr.items.find(i => String(i.sfx) === String(sfx));
+  const nv = Math.max(0, Math.min(30, it.qty + delta));
+  if (nv === it.qty) return;
+  it.qty = nv;
+  document.getElementById('q_' + di + '_' + sfx).textContent = nv;
+  document.getElementById('tot_' + di).textContent = dr.items.reduce((s,i)=>s+i.qty,0) + ' шт';
+  post({ oleand:'app_qty', id: dr.id, sfx: sfx, delta: delta }, '', false);
+}
+function prep(di) {
+  const dr = DATA.drafts[di];
+  post({ oleand:'app_prep', id: dr.id }, '✅ Подготовлено! Прачка и хозяйка получат уведомление', true);
+  DATA.drafts.splice(di, 1); rLaundry(); rToday();
+}
+function cancelDraft(di) {
+  const dr = DATA.drafts[di];
+  post({ oleand:'app_cancel', id: dr.id }, '❌ Черновик отменён', true);
+  DATA.drafts.splice(di, 1); rLaundry(); rToday();
+}
+function pickup() {
+  post({ oleand:'app_pickup' }, '🚚 Отмечено! Накладная-факт придёт в Telegram', true);
+  DATA.prepared = []; rLaundry(); rToday();
+}
+
+// ---------- ГРАФИК ----------
+function rSchedule() {
+  const d = DATA;
+  const week = weekDays();
+  let h = '<div class="card"><div class="card-title">👥 График горничных <span class="badge">' + fmtD(week[0]) + '–' + fmtD(week[6]) + '</span></div><div class="week-scroll"><table class="week"><tr><th style="text-align:left;padding-left:12px">Объект</th>';
+  const today = isoToday();
+  week.forEach(w => { h += '<th class="' + (w === today ? 'today' : '') + '">' + DOW[new Date(w + 'T12:00:00').getDay()] + ' ' + Number(w.slice(8)) + '</th>'; });
+  h += '</tr>';
+  OBJECTS.forEach(obj => {
+    h += '<tr><td class="objcol">' + esc(shortObj(obj)) + '</td>';
+    week.forEach(w => {
+      const s = d.schedule.find(x => x.date === w && x.obj === obj);
+      const mi = s ? MAIDS.indexOf(s.maid) : -1;
+      h += '<td onclick="cellTap(\'' + w + '\',\'' + jsq(obj) + '\')">' + (s ? '<span class="m m' + (mi >= 0 ? mi : 0) + '">' + esc(s.maid) + '</span>' : '') + '</td>';
+    });
+    h += '</tr>';
+  });
+  h += '</table></div><div class="note">Нажми на клетку, чтобы назначить или убрать горничную</div></div>';
+
+  const cnt = {};
+  d.schedule.forEach(s => { const w = weekDays(); if (w.indexOf(s.date) >= 0) cnt[s.maid] = (cnt[s.maid] || 0) + 1; });
+  h += '<div class="card"><div class="card-title">📊 Смены на этой неделе</div>';
+  if (!Object.keys(cnt).length) h += '<div class="empty">Назначений пока нет</div>';
+  for (const m in cnt) { const mi = MAIDS.indexOf(m); h += '<div class="row"><div class="row-main"><div class="row-title">' + esc(m) + '</div></div><span class="chip ' + ['wine','blue','green','amber','gray'][mi >= 0 ? mi : 4] + '">' + cnt[m] + ' ' + plural(cnt[m]) + '</span></div>'; }
+  h += '</div>';
+  document.getElementById('tab-schedule').innerHTML = h;
+}
+function cellTap(date, obj) {
+  const cur = DATA.schedule.find(x => x.date === date && x.obj === obj);
+  pickMaid(shortObj(obj) + ' · ' + fmtD(date) + (cur ? ' (сейчас: ' + cur.maid + ')' : ''), maid => {
+    if (cur) { if (maid) cur.maid = maid; else DATA.schedule.splice(DATA.schedule.indexOf(cur), 1); }
+    else if (maid) DATA.schedule.push({ date: date, obj: obj, maid: maid });
+    rSchedule();
+    post({ oleand:'app_sched', date: date, obj: obj, maid: maid || '' }, maid ? '👥 ' + maid + ' назначена' : 'Смена убрана', false);
+  }, !!cur);
+}
+
+// ---------- РАСХОДЫ ----------
+function rExpenses() {
+  const e = DATA.expenses;
+  const monName = new Date().toLocaleDateString('ru-RU', { month:'long', year:'numeric' });
+  let h = '<div class="card"><div class="card-title">💰 ' + esc(monName) + '</div><div class="exp-sum"><span>Всего расходов</span><b>' + fmtSum(e.total) + ' ₽</b></div></div>';
+
+  h += '<div class="card"><div class="card-title">➕ Добавить расход</div><div class="form-grid">' +
+    '<div class="full"><div class="flabel">Объект</div><select id="eObj">' + OBJECTS.map(o => '<option>' + esc(o) + '</option>').join('') + '<option>Общее</option></select></div>' +
+    '<div><div class="flabel">Сумма, ₽</div><input type="number" id="eSum" placeholder="0"></div>' +
+    '<div><div class="flabel">Кто купил</div><select id="eWho">' + MAIDS.map(m => '<option' + (m === 'Гуля' ? ' selected' : '') + '>' + m + '</option>').join('') + '</select></div>' +
+    '<div class="full"><div class="flabel">Что купили</div><input type="text" id="eWhat" placeholder="напр. химия для уборки, лампочки…"></div>' +
+    '<div class="full"><label class="photo-btn">📸 Прикрепить фото чека<input type="file" accept="image/*" style="display:none" id="ePhoto" onchange="prevPhoto(this)"></label><img class="photo-prev" id="ePrev"></div>' +
+    '<div class="full"><button class="btn-main" id="expBtn" onclick="addExp()">Сохранить расход</button></div></div></div>';
+
+  h += '<div class="card"><div class="card-title">🧾 Последние расходы</div>';
+  if (!e.list.length) h += '<div class="empty">В этом месяце расходов пока нет</div>';
+  e.list.forEach(x => {
+    h += '<div class="row"><div class="row-main"><div class="row-title">' + esc(x.what) + '</div><div class="row-sub">' + esc(x.date) + ' · ' + esc(x.obj) + ' · ' + esc(x.who) + (x.url ? ' · <a href="' + esc(x.url) + '" target="_blank" style="color:#621727">чек 📎</a>' : '') + '</div></div><span class="chip wine">' + fmtSum(x.sum) + ' ₽</span></div>';
+  });
+  h += '</div>';
+
+  const keys = Object.keys(e.byObj).sort((a,b) => e.byObj[b] - e.byObj[a]);
+  if (keys.length) {
+    h += '<div class="card"><div class="card-title">📊 По объектам за месяц</div>';
+    keys.forEach(k => { h += '<div class="row"><div class="row-main"><div class="row-title">' + esc(k) + '</div></div><span class="chip gray">' + fmtSum(e.byObj[k]) + ' ₽</span></div>'; });
+    h += '</div>';
+  }
+  document.getElementById('tab-expenses').innerHTML = h;
+}
+let photoData = '';
 function prevPhoto(inp) {
   if (!inp.files || !inp.files[0]) return;
-  var r = new FileReader();
-  r.onload = function(e) { var p = document.getElementById('ePrev'); p.src = e.target.result; p.style.display = 'block'; };
-  r.readAsDataURL(inp.files[0]);
+  const img = new Image();
+  const rd = new FileReader();
+  rd.onload = ev => {
+    img.onload = () => {
+      const cv = document.createElement('canvas');
+      const k = Math.min(1, 1280 / Math.max(img.width, img.height));
+      cv.width = img.width * k; cv.height = img.height * k;
+      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+      photoData = cv.toDataURL('image/jpeg', .8);
+      const p = document.getElementById('ePrev'); p.src = photoData; p.style.display = 'block';
+    };
+    img.src = ev.target.result;
+  };
+  rd.readAsDataURL(inp.files[0]);
+}
+function addExp() {
+  const sum = document.getElementById('eSum').value;
+  const what = document.getElementById('eWhat').value.trim();
+  if (!sum || !what) { toast('Заполни сумму и что купили 🙂'); return; }
+  const obj = document.getElementById('eObj').value;
+  const who = document.getElementById('eWho').value;
+  document.getElementById('expBtn').textContent = '⏳ Сохраняю…';
+  DATA.expenses.total += Number(sum);
+  DATA.expenses.list.unshift({ date: new Date().toLocaleDateString('ru-RU'), obj: obj, sum: Number(sum), what: what, who: who, url: '' });
+  DATA.expenses.byObj[obj] = (DATA.expenses.byObj[obj] || 0) + Number(sum);
+  post({ oleand:'app_exp', obj: obj, sum: Number(sum), what: what, who: who, photo: photoData }, '💰 Расход сохранён' + (photoData ? ', чек уйдёт на Google Диск' : ''), true);
+  photoData = '';
+  rExpenses();
 }
 
-function addExp() {
-  var sum = document.getElementById('eSum').value;
-  var what = document.getElementById('eWhat').value;
-  if (!sum || !what) { alert('Заполни сумму и что купили 🙂'); return; }
-  var obj = document.getElementById('eObj').value;
-  var who = document.getElementById('eWho').value;
-  var hasPhoto = document.getElementById('ePrev').style.display === 'block';
-  var row = document.createElement('div');
-  row.className = 'row';
-  var dd = new Date().toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit' });
-  row.innerHTML = '<div class="row-main"><div class="row-title">' + what + '</div><div class="row-sub">' + dd + ' · ' + obj + ' · ' + who + (hasPhoto ? ' · чек 📎' : '') + '</div></div><span class="chip wine">' + Number(sum).toLocaleString('ru-RU') + ' ₽</span>';
-  var list = document.getElementById('expList');
-  list.insertBefore(row, list.firstChild);
-  document.getElementById('eSum').value = ''; document.getElementById('eWhat').value = '';
-  document.getElementById('ePrev').style.display = 'none';
-  alert('Сохранено (в тесте — только на этой странице).\nВ рабочей версии: запись в таблицу + фото чека на Google Диск + уведомление хозяйке.');
+// ---------- Помощники ----------
+function isoToday(){ const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function weekDays(){ const d = new Date(); const dow = (d.getDay() + 6) % 7; const mon = new Date(d - dow * 86400000); const out = []; for (let i = 0; i < 7; i++){ const x = new Date(mon.getTime() + i * 86400000); out.push(x.getFullYear() + '-' + String(x.getMonth()+1).padStart(2,'0') + '-' + String(x.getDate()).padStart(2,'0')); } return out; }
+function fmtD(iso){ return Number(iso.slice(8)) + '.' + iso.slice(5,7); }
+function shortObj(o){ return o.replace(' б+м','').replace(' проспект','').replace('Железнодор.','Железнодорожный'); }
+function objMatch(a, b){ return a === b || a.indexOf(b.split(' ')[0]) >= 0 || b.indexOf(a.split(' ')[0]) >= 0; }
+function plural(n){ return n === 1 ? 'уборка' : n < 5 ? 'уборки' : 'уборок'; }
+function fmtSum(n){ return Number(n || 0).toLocaleString('ru-RU'); }
+function jsq(s){ return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+function openUrl(u){ if (tgApp && tgApp.openLink) { location.href = u; } else window.open(u, '_blank'); }
+
+function pickMaid(title, cb, allowDel) {
+  let h = '<h3>' + esc(title) + '</h3>';
+  MAIDS.forEach(m => { h += '<button class="m-btn" onclick="modalPick(\'' + jsq(m) + '\')">' + esc(m) + '</button>'; });
+  if (allowDel) h += '<button class="m-btn m-del" onclick="modalPick(\'\')">🗑 Убрать назначение</button>';
+  h += '<button class="m-btn" onclick="closeModal()">Отмена</button>';
+  document.getElementById('modalBody').innerHTML = h;
+  document.getElementById('modalBg').classList.add('show');
+  window._modalCb = cb;
 }
+function pickFrom(title, list, cb) {
+  let h = '<h3>' + esc(title) + '</h3>';
+  list.forEach(m => { h += '<button class="m-btn" onclick="modalPick(\'' + jsq(m) + '\')">' + esc(m) + '</button>'; });
+  h += '<button class="m-btn" onclick="closeModal()">Отмена</button>';
+  document.getElementById('modalBody').innerHTML = h;
+  document.getElementById('modalBg').classList.add('show');
+  window._modalCb = cb;
+}
+function modalPick(v) { closeModal(); if (window._modalCb) window._modalCb(v); }
+function closeModal() { document.getElementById('modalBg').classList.remove('show'); }
+
+load(false);
 </script>
 
 </body>

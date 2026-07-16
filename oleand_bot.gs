@@ -807,3 +807,377 @@ function handleDraftCb(cb) {
     doPickup(chat, mid);
   }
 }
+
+// ========== ЭТАП 10: МИНИ-ПРИЛОЖЕНИЕ OLEAND (живые данные) ==========
+// Новые doGet, doPost, kbFor ниже заменяют версии выше — так задумано.
+// Чат прачки: функции sendTopic/captureTopic уже готовы, но спят,
+// пока не заданы свойства LAUNDRY_GROUP и TOPICS_MAP (включим позже).
+
+var APP_URL = 'https://qnesterowa-hash.github.io/oleand/oleand_app.html';
+var MAIDS = ['Валерия', 'Мария', 'Анна', 'Гуля', 'Ольга'];
+
+// ---------- Листы ----------
+function getSchedSheet() { var ss = getSheetFile(); var sh = ss.getSheetByName('График'); if (!sh) { sh = ss.insertSheet('График'); sh.appendRow(['Дата', 'Объект', 'Горничная']); } return sh; }
+function getExpSheet() { var ss = getSheetFile(); var sh = ss.getSheetByName('Расходы'); if (!sh) { sh = ss.insertSheet('Расходы'); sh.appendRow(['Дата', 'Месяц', 'Объект', 'Сумма', 'Что', 'Кто', 'Чек']); } return sh; }
+function getCleanSheet() { var ss = getSheetFile(); var sh = ss.getSheetByName('Уборки'); if (!sh) { sh = ss.insertSheet('Уборки'); sh.appendRow(['Дата', 'Объект', 'Горничная', 'Статус', 'Обновлено']); } return sh; }
+
+// ---------- Данные для приложения ----------
+function todayJsonApp() {
+  var cache = CacheService.getScriptCache();
+  var hit = cache.get('app_today');
+  if (hit) return JSON.parse(hit);
+  var today = Utilities.formatDate(new Date(), 'Europe/Moscow', 'yyyyMMdd');
+  var out = [];
+  for (var c = 0; c < CALENDARS.length; c++) {
+    if (!CALENDARS[c].url) continue;
+    var txt = '';
+    try { txt = UrlFetchApp.fetch(CALENDARS[c].url).getContentText(); } catch (er) { continue; }
+    var ev = parseIcs(txt); var vin = 0, vout = 0;
+    for (var k = 0; k < ev.length; k++) { if (ev[k].s === today) vin++; if (ev[k].e === today) vout++; }
+    if (vin || vout) out.push({ obj: CALENDARS[c].obj, out: vout, in_: vin });
+  }
+  cache.put('app_today', JSON.stringify(out), 600);
+  return out;
+}
+
+function draftsJsonApp() {
+  var v = getLaundrySheet().getDataRange().getValues();
+  var map = {};
+  for (var i = 1; i < v.length; i++) {
+    if (v[i][5] !== 'черновик') continue;
+    var id = String(v[i][0]).split('_')[0];
+    if (!map[id]) map[id] = { id: id, obj: v[i][2], date: fmtCell(v[i][1]), items: [] };
+    map[id].items.push({ sfx: String(v[i][0]).split('_')[1], name: v[i][3], qty: Number(v[i][4]) || 0 });
+  }
+  var arr = []; for (var d in map) arr.push(map[d]);
+  return arr;
+}
+
+function preparedJsonApp() {
+  var rows = preparedRows(); var byObj = {};
+  for (var i = 0; i < rows.length; i++) {
+    if (!byObj[rows[i].obj]) byObj[rows[i].obj] = { obj: rows[i].obj, items: [], total: 0 };
+    byObj[rows[i].obj].items.push(rows[i].name + ' — ' + rows[i].qty);
+    byObj[rows[i].obj].total += rows[i].qty;
+  }
+  var arr = []; for (var o in byObj) arr.push(byObj[o]);
+  return arr;
+}
+
+function laundryNowJson() {
+  var v = getLaundrySheet().getDataRange().getValues(); var byObj = {};
+  for (var i = 1; i < v.length; i++) {
+    if (v[i][5] !== 'в прачке') continue;
+    var o = v[i][2];
+    if (!byObj[o]) byObj[o] = { obj: o, total: 0, date: fmtCell(v[i][1]) };
+    byObj[o].total += Number(v[i][4]) || 0;
+  }
+  var arr = []; for (var k in byObj) arr.push(byObj[k]);
+  return arr;
+}
+
+function scheduleJsonApp() {
+  var v = getSchedSheet().getDataRange().getValues();
+  var lo = new Date(Date.now() - 8 * 86400000), hi = new Date(Date.now() + 15 * 86400000);
+  var out = [];
+  for (var i = 1; i < v.length; i++) {
+    var d = v[i][0] && v[i][0].getTime ? v[i][0] : new Date(String(v[i][0]));
+    if (isNaN(d) || d < lo || d > hi) continue;
+    out.push({ date: Utilities.formatDate(d, 'Europe/Moscow', 'yyyy-MM-dd'), obj: v[i][1], maid: v[i][2] });
+  }
+  return out;
+}
+
+function cleaningsJsonApp() {
+  var today = Utilities.formatDate(new Date(), 'Europe/Moscow', 'yyyy-MM-dd');
+  var v = getCleanSheet().getDataRange().getValues(); var out = [];
+  for (var i = 1; i < v.length; i++) {
+    var d = v[i][0] && v[i][0].getTime ? Utilities.formatDate(v[i][0], 'Europe/Moscow', 'yyyy-MM-dd') : String(v[i][0]);
+    if (d !== today) continue;
+    out.push({ obj: v[i][1], maid: v[i][2], status: v[i][3] });
+  }
+  return out;
+}
+
+function expensesJsonApp() {
+  var mon = Utilities.formatDate(new Date(), 'Europe/Moscow', 'yyyy-MM');
+  var v = getExpSheet().getDataRange().getValues();
+  var list = [], total = 0, byObj = {};
+  for (var i = v.length - 1; i >= 1; i--) {
+    if (String(v[i][1]) !== mon) continue;
+    var sum = Number(v[i][3]) || 0;
+    list.push({ date: fmtCell(v[i][0]), obj: v[i][2], sum: sum, what: v[i][4], who: v[i][5], url: v[i][6] || '' });
+    total += sum;
+    byObj[v[i][2]] = (byObj[v[i][2]] || 0) + sum;
+  }
+  return { month: mon, total: total, list: list.slice(0, 30), byObj: byObj };
+}
+
+function appJson() {
+  return {
+    ok: true,
+    date: Utilities.formatDate(new Date(), 'Europe/Moscow', 'dd.MM.yyyy'),
+    today: todayJsonApp(),
+    cleanings: cleaningsJsonApp(),
+    drafts: draftsJsonApp(),
+    prepared: preparedJsonApp(),
+    laundry: laundryNowJson(),
+    schedule: scheduleJsonApp(),
+    expenses: expensesJsonApp()
+  };
+}
+
+// ---------- Действия приложения ----------
+function appSetQty(id, sfx, delta) {
+  var rows = draftRows(id);
+  for (var j = 0; j < rows.length; j++) {
+    if (rows[j].id === id + '_' + sfx && rows[j].status === 'черновик') {
+      var q = rows[j].qty + delta; if (q < 0) q = 0; if (q > 30) q = 30;
+      getLaundrySheet().getRange(rows[j].row, 5).setValue(q);
+      return;
+    }
+  }
+}
+
+function appPrep(id, chat) {
+  var rows = draftRows(id);
+  var fresh = rows.filter(function (r) { return r.status === 'черновик'; });
+  if (!fresh.length) return;
+  var sh = getLaundrySheet();
+  for (var i = 0; i < fresh.length; i++) sh.getRange(fresh[i].row, 6).setValue('подготовлено');
+  if (chat) send(chat, draftText(id, '✅ <b>Подготовлено к сдаче в прачку</b>') + '\n\nБельё копится до забора прачкой.', kbView(id));
+  notifyPrepared();
+  sendTopic(rows[0].obj, (draftText(id, '🧺 <b>Готово к забору</b>') || ''), [[{ text: '🚚 Подтвердить забор', callback_data: 'pk|0' }]]);
+}
+
+function appCancel(id) {
+  var rows = draftRows(id); var sh = getLaundrySheet();
+  for (var n = 0; n < rows.length; n++) if (rows[n].status === 'черновик') sh.getRange(rows[n].row, 6).setValue('отменено');
+}
+
+function appPickup(chat) {
+  var rows = preparedRows();
+  if (!rows.length) { if (chat) send(chat, 'Сейчас нет подготовленного белья — забирать нечего 🙂'); return; }
+  var sh = getLaundrySheet(); var ship = getShipSheet(); var j = getSheetFile().getSheetByName('Журнал');
+  var now = new Date();
+  var d = Utilities.formatDate(now, 'Europe/Moscow', 'dd.MM.yyyy');
+  var mon = Utilities.formatDate(now, 'Europe/Moscow', 'yyyy-MM');
+  var shipId = 'S' + Date.now().toString(36);
+  var byObj = {}, total = 0;
+  for (var i = 0; i < rows.length; i++) {
+    if (rows[i].qty > 0) {
+      sh.getRange(rows[i].row, 6).setValue('в прачке');
+      ship.appendRow([d, mon, rows[i].obj, rows[i].name, rows[i].qty, shipId]);
+      j.appendRow([d, 'сдано в прачку', rows[i].obj, rows[i].name, rows[i].qty, 'забор прачкой']);
+      if (!byObj[rows[i].obj]) byObj[rows[i].obj] = [];
+      byObj[rows[i].obj].push('• ' + rows[i].name + ' — ' + rows[i].qty + ' шт');
+      total += rows[i].qty;
+    } else { sh.getRange(rows[i].row, 6).setValue('отменено'); }
+  }
+  var t = '🚚 <b>НАКЛАДНАЯ — ФАКТ ОТГРУЗКИ</b>\n📅 ' + d + '\n';
+  for (var o in byObj) t += '\n🏠 <b>' + o + '</b>\n' + byObj[o].join('\n') + '\n';
+  t += '\n📦 Итого отгружено: ' + total + ' шт';
+  var L = PropertiesService.getScriptProperties().getProperty('LAUNDRY_CHAT');
+  if (L) send(L, t, kbView(shipId));
+  var a = adminIds();
+  for (var k = 0; k < a.length; k++) send(a[k], t, kbView(shipId));
+  for (var o2 in byObj) sendTopic(o2, '🚚 <b>Забрано в прачку</b>\n' + byObj[o2].join('\n'), null);
+}
+
+function appClean(dateStr, obj, maid, status) {
+  var sh = getCleanSheet(); var v = sh.getDataRange().getValues();
+  var now = Utilities.formatDate(new Date(), 'Europe/Moscow', 'dd.MM.yyyy HH:mm');
+  for (var i = 1; i < v.length; i++) {
+    var d = v[i][0] && v[i][0].getTime ? Utilities.formatDate(v[i][0], 'Europe/Moscow', 'yyyy-MM-dd') : String(v[i][0]);
+    if (d === dateStr && v[i][1] === obj) {
+      sh.getRange(i + 1, 3).setValue(maid || v[i][2]);
+      sh.getRange(i + 1, 4).setValue(status);
+      sh.getRange(i + 1, 5).setValue(now);
+      if (status === 'готово') notifyCleanDone(obj, maid || v[i][2]);
+      return;
+    }
+  }
+  sh.appendRow([dateStr, obj, maid || '', status, now]);
+  if (status === 'готово') notifyCleanDone(obj, maid);
+}
+
+function notifyCleanDone(obj, maid) {
+  var a = adminIds();
+  for (var i = 0; i < a.length; i++) send(a[i], '✅ <b>Уборка готова</b>\n🏠 ' + obj + (maid ? '\n👤 ' + maid : ''));
+}
+
+function appSched(dateStr, obj, maid) {
+  var sh = getSchedSheet(); var v = sh.getDataRange().getValues();
+  for (var i = 1; i < v.length; i++) {
+    var d = v[i][0] && v[i][0].getTime ? Utilities.formatDate(v[i][0], 'Europe/Moscow', 'yyyy-MM-dd') : String(v[i][0]);
+    if (d === dateStr && v[i][1] === obj) {
+      if (maid) sh.getRange(i + 1, 3).setValue(maid); else sh.deleteRow(i + 1);
+      return;
+    }
+  }
+  if (maid) sh.appendRow([dateStr, obj, maid]);
+}
+
+function saveReceipt(dataUrl) {
+  try {
+    var m = String(dataUrl).match(/^data:(image\/[\w.+-]+);base64,(.+)$/);
+    if (!m) return '';
+    var blob = Utilities.newBlob(Utilities.base64Decode(m[2]), m[1], 'чек_' + Utilities.formatDate(new Date(), 'Europe/Moscow', 'dd.MM.yyyy_HH-mm-ss') + '.jpg');
+    var it = DriveApp.getFoldersByName('OLEAND чеки');
+    var folder = it.hasNext() ? it.next() : DriveApp.createFolder('OLEAND чеки');
+    var f = folder.createFile(blob);
+    f.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    return 'https://drive.google.com/file/d/' + f.getId() + '/view';
+  } catch (e) { return ''; }
+}
+
+function appExpense(u) {
+  var now = new Date();
+  var d = Utilities.formatDate(now, 'Europe/Moscow', 'dd.MM.yyyy');
+  var mon = Utilities.formatDate(now, 'Europe/Moscow', 'yyyy-MM');
+  var url = u.photo ? saveReceipt(u.photo) : '';
+  getExpSheet().appendRow([d, mon, u.obj || '', Number(u.sum) || 0, u.what || '', u.who || '', url]);
+  var a = adminIds();
+  var t = '💰 <b>Новый расход</b>\n' + (u.what || '') + ' — <b>' + (Number(u.sum) || 0) + ' ₽</b>\n🏠 ' + (u.obj || '') + ' · 👤 ' + (u.who || '') + (url ? '\n🧾 Чек: ' + url : '');
+  for (var i = 0; i < a.length; i++) send(a[i], t);
+}
+
+// ---------- Чат прачки (спит до настройки LAUNDRY_GROUP + TOPICS_MAP) ----------
+function sendTopic(obj, text, kb) {
+  try {
+    var p = PropertiesService.getScriptProperties();
+    var grp = p.getProperty('LAUNDRY_GROUP');
+    var map = p.getProperty('TOPICS_MAP');
+    if (!grp || !map || !text) return;
+    var topics = JSON.parse(map);
+    if (topics[obj] === undefined) return;
+    var pl = { chat_id: grp, message_thread_id: Number(topics[obj]), text: text, parse_mode: 'HTML' };
+    if (kb) pl.reply_markup = { inline_keyboard: kb };
+    tg('sendMessage', pl);
+  } catch (e) {}
+}
+
+function captureTopic(msg) {
+  try {
+    var p = PropertiesService.getScriptProperties();
+    var log = JSON.parse(p.getProperty('TOPICS_SEEN') || '{}');
+    var key = String(msg.chat.id);
+    if (!log[key]) log[key] = {};
+    var th = msg.message_thread_id || 0;
+    log[key][th] = String(msg.text || '').slice(0, 40) + ' | ' + (msg.chat.title || '');
+    p.setProperty('TOPICS_SEEN', JSON.stringify(log));
+  } catch (e) {}
+}
+
+// Посмотреть замеченные ветки (запустить вручную после «тест» в ветках)
+function showTopics() { Logger.log(PropertiesService.getScriptProperties().getProperty('TOPICS_SEEN') || 'пока пусто'); }
+
+// ---------- Меню с кнопкой приложения (хозяйке) ----------
+function kbFor(id) {
+  var r = roleOf(id);
+  if (r === 'guest') return null;
+  if (r === 'laundry') return [[{ text: '🚚 Подтвердить забор', callback_data: 'pk|0' }]];
+  var rows = [];
+  if (r === 'admin') {
+    rows.push([{ text: '📱 Приложение OLEAND', web_app: { url: APP_URL } }]);
+    rows.push([{ text: '📅 План на сегодня', callback_data: 'pl|0' }]);
+  }
+  rows.push([{ text: '🧺 Сдать в прачку', web_app: { url: FORM_URL } }]);
+  rows.push([{ text: '📦 Приняли из прачки', web_app: { url: PRIEM_URL } }]);
+  rows.push([{ text: '📊 Остатки', web_app: { url: OSTATKI_URL } }]);
+  if (r === 'admin') rows.push([{ text: '🚚 Прачка забрала бельё', callback_data: 'pk|0' }, { text: '📊 Сверка за месяц', callback_data: 'rep|0' }]);
+  return rows;
+}
+
+// ---------- Итоговый doGet (заменяет версию выше — так задумано) ----------
+function doGet(e) {
+  var api = e && e.parameter ? e.parameter.api : '';
+  if (api === 'app') return jsonOut(appJson());
+  if (api === 'pending') return jsonOut({ ok: true, items: pendingJson() });
+  if (api === 'balance') return jsonOut({ ok: true, objects: balanceJson() });
+  if (api === 'nakl') {
+    var id = e.parameter.id || '';
+    var v = getLaundrySheet().getDataRange().getValues();
+    var items = [], obj = '', date = '', status = '';
+    for (var i = 1; i < v.length; i++)
+      if (String(v[i][0]).indexOf(id + '_') === 0) {
+        obj = v[i][2]; date = fmtCell(v[i][1]); status = String(v[i][5]);
+        if (Number(v[i][4]) > 0) items.push({ name: v[i][3], qty: Number(v[i][4]) });
+      }
+    return jsonOut({ ok: true, type: 'draft', id: id, obj: obj, date: date, status: status, items: items });
+  }
+  if (api === 'ship') {
+    var id2 = e.parameter.id || '';
+    var s = getShipSheet().getDataRange().getValues();
+    var items2 = [], date2 = '';
+    for (var r = 1; r < s.length; r++)
+      if (String(s[r][5]) === id2) { date2 = fmtCell(s[r][0]); items2.push({ obj: s[r][2], name: s[r][3], qty: Number(s[r][4]) }); }
+    return jsonOut({ ok: true, type: 'ship', id: id2, date: date2, items: items2 });
+  }
+  return ContentService.createTextOutput('OLEAND bot ok');
+}
+
+// ---------- Итоговый doPost (заменяет версии выше — так задумано) ----------
+function doPost(e) {
+  try {
+    var u = JSON.parse(e.postData.contents);
+
+    // Действия мини-приложения
+    if (u.oleand === 'app_qty') { appSetQty(u.id, String(u.sfx), Number(u.delta) || 0); return HtmlService.createHtmlOutput('ok'); }
+    if (u.oleand === 'app_prep') { appPrep(u.id, u.chat); return HtmlService.createHtmlOutput('ok'); }
+    if (u.oleand === 'app_cancel') { appCancel(u.id); return HtmlService.createHtmlOutput('ok'); }
+    if (u.oleand === 'app_pickup') { appPickup(u.chat); return HtmlService.createHtmlOutput('ok'); }
+    if (u.oleand === 'app_clean') { appClean(u.date, u.obj, u.maid, u.status); return HtmlService.createHtmlOutput('ok'); }
+    if (u.oleand === 'app_sched') { appSched(u.date, u.obj, u.maid); return HtmlService.createHtmlOutput('ok'); }
+    if (u.oleand === 'app_exp') { appExpense(u); return HtmlService.createHtmlOutput('ok'); }
+
+    // Mini App: накладная из формы
+    if (u.oleand === 'nakl' && u.chat && u.text) {
+      if (u.obj && u.items) saveNakl(u.obj, u.items, u.who);
+      tg('sendMessage', { chat_id: u.chat, text: u.text });
+      var L = PropertiesService.getScriptProperties().getProperty('LAUNDRY_CHAT');
+      if (L && String(L) !== String(u.chat)) tg('sendMessage', { chat_id: L, text: u.text });
+      return HtmlService.createHtmlOutput('ok');
+    }
+    // Mini App: приём из прачки
+    if (u.oleand === 'recv' && u.chat && u.ids) { receiveIds(u.ids, u.chat); return HtmlService.createHtmlOutput('ok'); }
+
+    if (u.callback_query) {
+      var cd = String(u.callback_query.data || '');
+      if (/^(dok|ded|dmn|dpl|dzz|dbk|dno|pk)\|/.test(cd)) { handleDraftCb(u.callback_query); return HtmlService.createHtmlOutput('ok'); }
+      if (cd === 'rep|0') {
+        tg('answerCallbackQuery', { callback_query_id: u.callback_query.id });
+        var rc = u.callback_query.message.chat.id;
+        if (roleOf(rc) === 'admin') send(rc, monthlyText(), kbFor(rc));
+        return HtmlService.createHtmlOutput('ok');
+      }
+      if (cd === 'pl|0') {
+        tg('answerCallbackQuery', { callback_query_id: u.callback_query.id });
+        var cid = u.callback_query.message.chat.id;
+        if (roleOf(cid) === 'admin') { addPlanSub(cid); send(cid, planText(), kbFor(cid)); }
+        else { send(cid, 'План на день доступен только хозяйке и менеджеру 🙂', kbFor(cid)); }
+        return HtmlService.createHtmlOutput('ok');
+      }
+    }
+
+    if (u.message) {
+      // В группах и ветках бот молчит — только запоминает ветку (для чата прачки)
+      if (u.message.chat && (u.message.chat.type === 'group' || u.message.chat.type === 'supergroup')) {
+        captureTopic(u.message);
+        return HtmlService.createHtmlOutput('ok');
+      }
+      var id = u.message.chat.id;
+      var t = String(u.message.text || '').toLowerCase().trim();
+      var p = PropertiesService.getScriptProperties();
+      if (t === 'я хозяйка' || t === 'я менеджер') { addAdmin(String(id)); send(id, 'Готово! 👑 Вам доступно всё, включая план на день.', kbFor(id)); return HtmlService.createHtmlOutput('ok'); }
+      if (t === 'я горничная') { var m = p.getProperty('MAID_CHATS') || ''; if (m.indexOf('[' + id + ']') < 0) p.setProperty('MAID_CHATS', m + '[' + id + ']'); send(id, 'Готово! Вы — горничная 🧹 В день выезда гостей сюда будет приходить накладная — проверьте и подтвердите её.', kbFor(id)); return HtmlService.createHtmlOutput('ok'); }
+      if (t === 'я прачка') { p.setProperty('LAUNDRY_CHAT', String(id)); send(id, 'Готово! Вы — прачка 🧺 Когда бельё подготовлено, сюда придёт список с кнопкой «Подтвердить забор».', kbFor(id)); return HtmlService.createHtmlOutput('ok'); }
+      var r = roleOf(id);
+      if (r === 'laundry') { var pt2 = preparedText(); send(id, pt2 ? pt2 + '\n\nКогда заберёте бельё — нажмите кнопку 👇' : 'Пока ничего не подготовлено. Списки будут приходить сюда автоматически 🧺', kbFor(id)); }
+      else if (r === 'guest') { send(id, 'Привет! Это бот OLEAND. Напишите кодовое слово, которое вам дали.'); }
+      else { send(id, 'Меню 👇', kbFor(id)); }
+      return HtmlService.createHtmlOutput('ok');
+    }
+  } catch (err) {}
+  return HtmlService.createHtmlOutput('ok');
+}
